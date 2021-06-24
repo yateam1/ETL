@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'OPTIONS': {
-            'options': '-c search_path=content,public'
+            'options': f'-c search_path=content,public'
         },
         'NAME': POSTGRES_DB,
         'USER': POSTGRES_USER,
