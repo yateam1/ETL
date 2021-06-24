@@ -1,10 +1,8 @@
 version: '3.7'
 
-
 services:
 
-
-  movie_app:
+  movie_web:
     container_name: movie_admin
     build:
       context: .
@@ -17,17 +15,6 @@ services:
     depends_on:
       - db
 
-  elasticsearch:
-    container_name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
-    environment:
-      - discovery.type=single-node
-    ports:
-      - 9200:9200
-      - 9300:9300
-    depends_on:
-      - db
-
   db:
     container_name: postgres
     image: postgres:13
@@ -37,4 +24,20 @@ services:
     ports:
       - 5432:5432
     volumes:
-    - /home/klimov/PycharmProjects/yandex.praktikum/pg_data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - movie_web
+    ports:
+      - 80:80
+    volumes:
+      - ./static/:/static
+
+volumes:
+  db-data:
+

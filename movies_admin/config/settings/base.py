@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from environs import Env
 
@@ -26,7 +27,7 @@ SECRET_KEY = PROJECT_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'psycopg2',
     'account',
     'movie',
 ]
@@ -78,9 +80,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'OPTIONS': {
-            'options': '-c search_path=django,public'
+            'options': '-c search_path=content,public'
         },
         'NAME': POSTGRES_DB,
         'USER': POSTGRES_USER,
