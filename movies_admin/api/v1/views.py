@@ -5,14 +5,14 @@ from django.db.models.functions import Concat
 from django.http import JsonResponse
 from django.views.generic.list import BaseListView
 
-from movie.models import Movie, Serial, Genre, RoleType
+from movie.models import Movie, Serial, RoleType
 
 
-class MovieApiMixin:
+class FilmworkApiMixin:
     http_method_names = ['get']
 
     def get_queryset(self):
-        queryset = Movie.objects.all()
+        queryset = self.model.objects.all()
         pk = self.kwargs.get('pk')
         if pk:
             queryset = queryset.get(id=pk)
@@ -22,17 +22,39 @@ class MovieApiMixin:
         return JsonResponse(context, json_dumps_params={'indent': 4})
 
 
-class MovieListApi(MovieApiMixin, BaseListView):
+class FilmworkDetailApiMixin:
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        filmwork = args[0]
+        context = {
+            'id': filmwork.id,
+            'title': filmwork.title,
+            'description': filmwork.description,
+            'creation_date': filmwork.creation_date,
+            'rating': filmwork.rating,
+            'type': filmwork._meta.verbose_name,
+            'genres': [genre.name for genre in filmwork.genres.all()]
+        }
+
+        return context
+
+
+class MovieListApi(FilmworkApiMixin, BaseListView):
     paginate_by = 10
+    model = Movie
+    context_object_key = 'movies'
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
         queryset = self.get_queryset()
+
         page_size = self.get_paginate_by(queryset)
         paginator, page, queryset, is_paginated = self.paginate_queryset(queryset, page_size)
 
-        filmwork_type = Value(queryset[0]._meta.verbose_name,
-                              output_field=models.CharField()) if queryset else 'movie'
+        if not queryset:
+            return {self.context_object_key: []}
+
+        filmwork_type = Value(queryset[0]._meta.verbose_name, output_field=models.CharField())
         full_name = Concat(F('moviepersonrole__person__last_name'),
                            Value(' '),
                            F('moviepersonrole__person__first_name')
@@ -59,60 +81,44 @@ class MovieListApi(MovieApiMixin, BaseListView):
         )
 
         context = {
-            'movies': list(movies)
+            self.context_object_key: list(movies)
         }
         return context
 
 
-class MovieDetailApi(MovieApiMixin, BaseListView):
+class MovieDetailApi(FilmworkApiMixin, FilmworkDetailApiMixin, BaseListView):
+    model = Movie
 
     def get_context_data(self, *, object_list=None, **kwargs):
         movie = self.get_queryset()
+        context = super().get_context_data(movie)
 
-        context = {
-            'id': movie.id,
-            'title': movie.title,
-            'description': movie.description,
-            'creation_date': movie.creation_date,
-            'rating': movie.rating,
-            'type': movie._meta.verbose_name,
-            'genres': [genre.name for genre in movie.genres.all()],
-            'actors': [f'{person.first_name} {person.last_name}' for person in
-                       movie.persons.filter(moviepersonrole__role=RoleType.ACTOR)],
-            'directors': [f'{person.first_name} {person.last_name}' for person in
-                          movie.persons.filter(moviepersonrole__role=RoleType.DIRECTOR)],
-            'writers': [f'{person.first_name} {person.last_name}' for person in
-                        movie.persons.filter(moviepersonrole__role=RoleType.WRITER)]
-        }
+        context['actors'] = [f'{person.first_name} {person.last_name}' for person in
+                             movie.persons.filter(moviepersonrole__role=RoleType.ACTOR)]
+        context['directors'] = [f'{person.first_name} {person.last_name}' for person in
+                                movie.persons.filter(moviepersonrole__role=RoleType.DIRECTOR)]
+        context['writers'] = [f'{person.first_name} {person.last_name}' for person in
+                              movie.persons.filter(moviepersonrole__role=RoleType.WRITER)]
 
         return context
 
 
-class SerialApiMixin:
-    http_method_names = ['get']
-
-    def get_queryset(self):
-        queryset = Serial.objects.all()
-        pk = self.kwargs.get('pk')
-        if pk:
-            queryset = queryset.get(id=pk)
-        return queryset
-
-    def render_to_response(self, context, **response_kwargs):
-        return JsonResponse(context, json_dumps_params={'indent': 4})
-
-
-class SerialListApi(SerialApiMixin, BaseListView):
+class SerialListApi(FilmworkApiMixin, BaseListView):
     paginate_by = 10
+    model = Serial
+    context_object_key = 'serials'
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
         queryset = self.get_queryset()
+
         page_size = self.get_paginate_by(queryset)
         paginator, page, queryset, is_paginated = self.paginate_queryset(queryset, page_size)
 
-        filmwork_type = Value(queryset[0]._meta.verbose_name,
-                              output_field=models.CharField()) if queryset else 'movie'
+        if not queryset:
+            return {self.context_object_key: []}
+
+        filmwork_type = Value(queryset[0]._meta.verbose_name, output_field=models.CharField())
         full_name = Concat(F('serialpersonrole__person__last_name'),
                            Value(' '),
                            F('serialpersonrole__person__first_name')
@@ -139,30 +145,23 @@ class SerialListApi(SerialApiMixin, BaseListView):
         )
 
         context = {
-            'serials': list(serials)
+            self.context_object_key: list(serials)
         }
         return context
 
 
-class SerialDetailApi(SerialApiMixin, BaseListView):
+class SerialDetailApi(FilmworkApiMixin, FilmworkDetailApiMixin, BaseListView):
+    model = Serial
 
     def get_context_data(self, *, object_list=None, **kwargs):
         serial = self.get_queryset()
+        context = super().get_context_data(serial)
 
-        context = {
-            'id': serial.id,
-            'title': serial.title,
-            'description': serial.description,
-            'creation_date': serial.creation_date,
-            'rating': serial.rating,
-            'type': serial._meta.verbose_name,
-            'genres': [genre.name for genre in serial.genres.all()],
-            'actors': [f'{person.first_name} {person.last_name}' for person in
-                       serial.persons.filter(serialpersonrole__role=RoleType.ACTOR)],
-            'directors': [f'{person.first_name} {person.last_name}' for person in
-                          serial.persons.filter(serialpersonrole__role=RoleType.DIRECTOR)],
-            'writers': [f'{person.first_name} {person.last_name}' for person in
-                        serial.persons.filter(serialpersonrole__role=RoleType.WRITER)]
-        }
+        context['actors'] = [f'{person.first_name} {person.last_name}' for person in
+                             serial.persons.filter(serialpersonrole__role=RoleType.ACTOR)]
+        context['directors'] = [f'{person.first_name} {person.last_name}' for person in
+                                serial.persons.filter(serialpersonrole__role=RoleType.DIRECTOR)]
+        context['writers'] = [f'{person.first_name} {person.last_name}' for person in
+                              serial.persons.filter(serialpersonrole__role=RoleType.WRITER)]
 
         return context
