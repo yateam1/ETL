@@ -30,8 +30,7 @@ services:
 
   nginx:
     container_name: nginx
-    build:
-      context: ./docker/nginx
+    image: nginx:1.19.2
     restart: always
     depends_on:
       - db
@@ -39,8 +38,9 @@ services:
     ports:
       - 80:80
     volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/configs:/etc/nginx/conf.d:ro
       - ./static/:/static
 
 volumes:
   db-data-4:
-
