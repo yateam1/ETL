@@ -1,16 +1,43 @@
 import json
 import logging
-from pprint import pprint
-
-import requests
-
+from contextlib import contextmanager
 from typing import List
 from urllib.parse import urljoin
+
 import psycopg2
-from psycopg2.extras import RealDictCursor
+import requests
 from environs import Env
+from psycopg2.extras import RealDictCursor
 
 logger = logging.getLogger()
+
+
+@contextmanager
+def conn_postgres():
+    """
+    Подключаемся к базе данных и возвращаем курсор
+    """
+    env = Env()
+    env.read_env()
+    POSTGRES_HOST = env.str("POSTGRES_HOST", default="localhost")
+    POSTGRES_PORT = env.int("POSTGRES_PORT", default=5432)
+    POSTGRES_DB = env.str("POSTGRES_DB")
+    POSTGRES_USER = env.str("POSTGRES_USER")
+    POSTGRES_PASSWORD = env.str("POSTGRES_PASSWORD")
+
+    conn = psycopg2.connect(host=POSTGRES_HOST, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER,
+                            password=POSTGRES_PASSWORD)
+    logger.info(f'The connection to the database {POSTGRES_DB} is established')
+
+    # Create a cursor object
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    yield cur
+
+    cur.close()
+    conn.close()
+    logger.info(f'The connection to the database {POSTGRES_DB} is closed')
+
 
 class ESLoader:
     def __init__(self, url: str):
@@ -18,7 +45,8 @@ class ESLoader:
 
     def _get_es_bulk_query(self, rows: List[dict], index_name: str) -> List[str]:
         """
-        Подготавливает bulk-запрос в Elasticsearch
+        Готовим bulk-запрос в Elasticsearch
+        :return: запрос
         """
         prepared_query = []
         for row in rows:
@@ -31,6 +59,8 @@ class ESLoader:
     def load_to_es(self, records: List[dict], index_name: str):
         """
         Отправка запроса в ES и разбор ошибок сохранения данных
+        :records: список словарей данных о кинопроизведениях (фильмы и сериалы)
+        :index_name: имя индекса
         """
         prepared_query = self._get_es_bulk_query(records, index_name)
         str_query = '\n'.join(prepared_query) + '\n'
@@ -47,74 +77,67 @@ class ESLoader:
                 logger.error(error_message)
                 return
 
-        logger.info('Документы успешно загружены в индекс')
+        logger.info(f'Documents have been successfully uploaded to the index {index_name}')
+
+    def remove_from_es(self, index_name: str):
+        """
+        Сервисный метод очистки индекса от документов
+        :index_name: имя индекса
+        """
+        url = urljoin(self.url, index_name) + '/_delete_by_query'
+        str_query = '{"query": {"match_all": {}}}'
+        response = requests.post(url=url, data=str_query, headers={'Content-Type': 'application/json'})
+        logger.info(f'All documents have been removed from the index {index_name}')
 
 
 class ETL:
-    def __init__(self, es_loader: ESLoader, host='http://127.0.0.1/'):
+    def __init__(self, es_loader: ESLoader, es_host='http://127.0.0.1/'):
         self.es_loader = es_loader
-        self.host = host
+        self.es_host = es_host
 
-    def get_movies(self, api_urls):
-        filmworks = list()
-        for api_url in api_urls:
-            url = urljoin(self.host, api_url)
-            print(url)
-            response = requests.get(url)
-            print(json.dumps(response.content))
-            filmworks.extend(list(response.content))
+    def extract_filmworks(self, cursor):
+        records = list()
 
-    def load_to_es(self, index_name: str, records):
+        with open('movies.sql') as sql_file:
+            sql = sql_file.read()
+        cursor.execute(f"""{sql}""")
+        records.extend(cursor.fetchall())
+
+        with open('serials.sql') as sql_file:
+            sql = sql_file.read()
+        cursor.execute(f"""{sql}""")
+        records.extend(cursor.fetchall())
+
+        return records
+
+    def load_to_es(self, index_name: str, cursor):
+        """
+        Основной метод ETL загрузки документов в индекс
+        :index_name: имя индекса
+        :cursor: соединения с базой данных
+        """
+
+        records = self.extract_filmworks(cursor)
         self.es_loader.load_to_es(records, index_name)
 
-    def clear(self, index_name: str):
-        '''
-        Дополнительный метод для ETL.
-        Удаляет из индекса все документы
-        '''
-
-        logger.info('На всякий случай очищаем индекс от документов')
-
-        url = urljoin(self.es_loader.url, index_name) + '/_delete_by_query'
-        str_query = '{"query": {"match_all": {}}}'
-
-        response = requests.post(
-            url=url,
-            data=str_query,
-            headers={'Content-Type': 'application/json'}
-        )
+    def delete_from_es(self, index_name: str):
+        """
+        Дополнительный метод для ETL. Удаляет из индекса все документы
+        :index_name: имя индекса
+        """
+        self.es_loader.remove_from_es(index_name)
 
 
 if __name__ == '__main__':
-    env = Env()
-    env.read_env()
-    POSTGRES_HOST = env.str("POSTGRES_HOST", default="localhost")
-    POSTGRES_PORT = env.int("POSTGRES_PORT", default=5432)
-    POSTGRES_DB = env.str("POSTGRES_DB")
-    POSTGRES_USER = env.str("POSTGRES_USER")
-    POSTGRES_PASSWORD = env.str("POSTGRES_PASSWORD")
 
-    conn = psycopg2.connect(host=POSTGRES_HOST, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER,
-                            password=POSTGRES_PASSWORD)
-    logger.info('The connection to the database is established')
-    # Create a cursor object
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-
-    with open('movies.sql') as sql_file:
-        sql = sql_file.read()
-    # print(sql)
-
-
-    cur.execute(f"{sql}")
-    query_results = cur.fetchall()
-    pprint(query_results)
+    logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
+                        format='%(levelname)s - %(asctime)s - %(name)s - %(message)s',
+                        datefmt='%d-%b-%y %H:%M:%S')
 
     es_loader = ESLoader("http://127.0.0.1:9200/")
     etl = ETL(es_loader=es_loader)
-    # etl.load_to_es('movies', query_results)
-    etl.clear('movies')
 
-    cur.close()
-    conn.close()
+    with conn_postgres() as cursor:
+        etl.load_to_es('movies', cursor)
 
-
+    etl.delete_from_es('movies')
