@@ -9,7 +9,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-movies_admin/static/
 develop-eggs/
 dist/
 downloads/
@@ -51,3 +50,6 @@ ENV/
 
 # auto generated docs
 doc.html
+
+# staticfiles
+movies_admin/static/

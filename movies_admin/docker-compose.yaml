@@ -9,6 +9,8 @@ services:
     env_file:
       - .env
     restart: always
+    networks:
+      - movie_net
     volumes:
       - .:/usr/src/app/
     depends_on:
@@ -22,6 +24,8 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_DB: $POSTGRES_DB
     restart: always
+    networks:
+      - movie_net
     ports:
       - $POSTGRES_PORT:$POSTGRES_PORT
     volumes:
@@ -32,6 +36,8 @@ services:
     container_name: nginx
     image: nginx:1.19.2
     restart: always
+    networks:
+      - movie_net
     depends_on:
       - db
       - movie_web
@@ -44,3 +50,8 @@ services:
 
 volumes:
   db-data-4:
+
+networks:
+  movie_net:
+    name: custom_network
+    driver: bridge

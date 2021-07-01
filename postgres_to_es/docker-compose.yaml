@@ -12,9 +12,5 @@ services:
     volumes:
       - es_data:/data
 
-  loader:
-
-
-
 volumes:
   es_data:
