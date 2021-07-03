@@ -1,8 +1,9 @@
+import logging
 import time
 from functools import wraps
 
 
-def backoff(logger, start_sleep_time=0.1, factor=2, border_sleep_time=10):
+def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10):
     """
     Функция для повторного выполнения функции через некоторое время, если возникла ошибка. Использует наивный экспоненциальный рост времени повтора (factor) до граничного времени ожидания (border_sleep_time)
 
@@ -24,7 +25,7 @@ def backoff(logger, start_sleep_time=0.1, factor=2, border_sleep_time=10):
                     # return value if value else None
                     next(value)
                 except:
-                    logger.error(f'Повторная попытка через {timeout} секунд')
+                    logging.error(f'Повторная попытка через {timeout} секунд')
                     time.sleep(timeout)
                     timeout *= 2 ** factor
         

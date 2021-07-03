@@ -1,5 +1,7 @@
 import datetime
 
+from postgres_to_es.storage import DBConnect
+
 
 class ETLFilmwork:
 
@@ -82,7 +84,7 @@ class ETLSerial(ETLFilmwork):
     
     def extract_filmworks(self, cursor, date_from, date_to, portion):
         records = list()
-
+        # cursor = DBConnect().conn_postgres()
         if not date_from:
             date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
         cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})

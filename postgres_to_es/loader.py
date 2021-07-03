@@ -13,12 +13,8 @@ from functools import wraps
 from psycopg2.extras import RealDictCursor
 from redis import Redis
 
-from processes import ETLMovie, ETLSerial
-from states import State, RedisStorage, REDIS_HOST
-
-from util import backoff
-
-logger = logging.getLogger()
+from process import ETLMovie, ETLSerial
+from storage import State, RedisStorage, REDIS_HOST
 
 
 def coroutine(func):
@@ -46,7 +42,7 @@ def conn_postgres():
 
     conn = psycopg2.connect(host=POSTGRES_HOST, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER,
                             password=POSTGRES_PASSWORD)
-    logger.info(f'The connection to the database {POSTGRES_DB} is established')
+    logging.info(f'The connection to the database {POSTGRES_DB} is established')
 
     # Create a cursor object
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -55,7 +51,7 @@ def conn_postgres():
 
     cur.close()
     conn.close()
-    logger.info(f'The connection to the database {POSTGRES_DB} is closed')
+    logging.info(f'The connection to the database {POSTGRES_DB} is closed')
 
 
 class ESLoader:
@@ -93,10 +89,10 @@ class ESLoader:
         for item in json_response['items']:
             error_message = item['index'].get('error')
             if error_message:
-                logger.error(error_message)
+                logging.error(error_message)
                 return
 
-        logger.info(f'Documents have been successfully uploaded to the index {index_name}')
+        logging.info(f'Documents have been successfully uploaded to the index {index_name}')
 
     def remove_from_es(self, index_name: str):
         """
@@ -106,7 +102,7 @@ class ESLoader:
         url = urljoin(self.url, index_name) + '/_delete_by_query'
         str_query = '{"query": {"match_all": {}}}'
         response = requests.post(url=url, data=str_query, headers={'Content-Type': 'application/json'})
-        logger.info(f'All documents have been removed from the index {index_name}')
+        logging.info(f'All documents have been removed from the index {index_name}')
 
 
 if __name__ == '__main__':
@@ -115,9 +111,11 @@ if __name__ == '__main__':
     params:
     :portion: размер "пачки", перегружаемых за один в раз
     :key_name: имя ключа, в котором хранится состояние процесса
+    :interval: период в секундах, через который запускаются процессы перегрузки
     """
     portion = 5
     key_name = 'producer'
+    interval = 2
 
     logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                         format='%(levelname)s - %(asctime)s - %(name)s - %(message)s',
@@ -140,18 +138,19 @@ if __name__ == '__main__':
                 last_created = datetime.fromisoformat(last_created)
                 logging.info(f'Looking for updates from {last_created}')
             now = datetime.now()
-            last_created = None
             
+            # не забыть удалить
+            last_created = None
             
             movies.load_to_es('movies', cursor, last_created, now, portion)
             serials.load_to_es('movies', cursor, last_created, now, portion)
             state.set_state(key_name, now.isoformat())
 
 
-        logging.info('Pause 2 seconds')
-        sleep(2)
+        logging.info(f'Pause {interval} seconds to the next ETL processes')
+        sleep(interval)
         foo += 1
-        if foo == 3:
+        if foo == 2:
             break
         
         
