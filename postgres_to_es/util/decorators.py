@@ -15,6 +15,7 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10):
     :param border_sleep_time: граничное время ожидания
     :return: результат выполнения функции
     """
+    
     def func_wrapper(function):
         @wraps(function)
         def inner(*args, **kwargs):
@@ -25,9 +26,10 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10):
                     # return value if value else None
                     next(value)
                 except:
-                    logging.error(f'Повторная попытка через {timeout} секунд')
+                    logging.error(f'{function.__name__}Повторная попытка через {timeout} секунд')
                     time.sleep(timeout)
                     timeout *= 2 ** factor
         
         return inner
+    
     return func_wrapper

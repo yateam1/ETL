@@ -27,31 +27,31 @@ def coroutine(func):
     return inner
 
 
-@contextmanager
-def conn_postgres():
-    """
-    Подключаемся к базе данных и возвращаем курсор
-    """
-    env = Env()
-    env.read_env()
-    POSTGRES_HOST = env.str("POSTGRES_HOST", default="localhost")
-    POSTGRES_PORT = env.int("POSTGRES_PORT", default=5432)
-    POSTGRES_DB = env.str("POSTGRES_DB")
-    POSTGRES_USER = env.str("POSTGRES_USER")
-    POSTGRES_PASSWORD = env.str("POSTGRES_PASSWORD")
-
-    conn = psycopg2.connect(host=POSTGRES_HOST, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER,
-                            password=POSTGRES_PASSWORD)
-    logging.info(f'The connection to the database {POSTGRES_DB} is established')
-
-    # Create a cursor object
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-
-    yield cur
-
-    cur.close()
-    conn.close()
-    logging.info(f'The connection to the database {POSTGRES_DB} is closed')
+# @contextmanager
+# def conn_postgres():
+#     """
+#     Подключаемся к базе данных и возвращаем курсор
+#     """
+#     env = Env()
+#     env.read_env()
+#     POSTGRES_HOST = env.str("POSTGRES_HOST", default="localhost")
+#     POSTGRES_PORT = env.int("POSTGRES_PORT", default=5432)
+#     POSTGRES_DB = env.str("POSTGRES_DB")
+#     POSTGRES_USER = env.str("POSTGRES_USER")
+#     POSTGRES_PASSWORD = env.str("POSTGRES_PASSWORD")
+#
+#     conn = psycopg2.connect(host=POSTGRES_HOST, port=POSTGRES_PORT, database=POSTGRES_DB, user=POSTGRES_USER,
+#                             password=POSTGRES_PASSWORD)
+#     logging.info(f'The connection to the database {POSTGRES_DB} is established')
+#
+#     # Create a cursor object
+#     cur = conn.cursor(cursor_factory=RealDictCursor)
+#
+#     yield cur
+#
+#     cur.close()
+#     conn.close()
+#     logging.info(f'The connection to the database {POSTGRES_DB} is closed')
 
 
 class ESLoader:
@@ -125,26 +125,26 @@ if __name__ == '__main__':
     
     while True:
         logging.info(f'Start loop at {datetime.now()}')
-        with conn_postgres() as cursor:
-            es_loader = ESLoader("http://127.0.0.1:9200/")
-            movies = ETLMovie(es_loader=es_loader)
-            serials = ETLSerial(es_loader=es_loader)
-            # movies.delete_from_es('movies')
-            
-            storage = RedisStorage(Redis(REDIS_HOST))
-            state = State(storage)
-            last_created = state.get_state(key_name)
-            if last_created:
-                last_created = datetime.fromisoformat(last_created)
-                logging.info(f'Looking for updates from {last_created}')
-            now = datetime.now()
-            
-            # не забыть удалить
-            last_created = None
-            
-            movies.load_to_es('movies', cursor, last_created, now, portion)
-            serials.load_to_es('movies', cursor, last_created, now, portion)
-            state.set_state(key_name, now.isoformat())
+        # with conn_postgres() as cursor:
+        es_loader = ESLoader("http://127.0.0.1:9200/")
+        movies = ETLMovie(es_loader=es_loader)
+        serials = ETLSerial(es_loader=es_loader)
+        # movies.delete_from_es('movies')
+        
+        storage = RedisStorage(Redis(REDIS_HOST))
+        state = State(storage)
+        last_created = state.get_state(key_name)
+        if last_created:
+            last_created = datetime.fromisoformat(last_created)
+        now = datetime.now()
+        
+        # не забыть удалить
+        last_created = None
+
+        logging.info(f'Looking for updates from {last_created}')
+        movies.load_to_es('movies', last_created, now, portion)
+        serials.load_to_es('movies', last_created, now, portion)
+        state.set_state(key_name, now.isoformat())
 
 
         logging.info(f'Pause {interval} seconds to the next ETL processes')

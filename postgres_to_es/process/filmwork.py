@@ -1,6 +1,6 @@
 import datetime
 
-from postgres_to_es.storage import DBConnect
+from postgres_to_es.storage import conn_postgres
 
 
 class ETLFilmwork:
@@ -9,16 +9,28 @@ class ETLFilmwork:
         self.es_loader = es_loader
         self.es_host = es_host
 
-    def load_to_es(self, index_name: str, cursor, date_from, date_to, portion):
+    def load_to_es(self, index_name: str, date_from, date_to, portion):
         """
         Основной метод ETL загрузки документов в индекс
         :index_name: имя индекса
         :cursor: соединения с базой данных
         """
 
-        batches = self.extract_filmworks(cursor, date_from, date_to, portion)
+        batches = self.extract_filmworks(date_from, date_to, portion)
         for batch in batches:
             self.es_loader.load_to_es(batch, index_name)
+
+    def extract_filmworks(self, date_from, date_to, portion):
+        with conn_postgres(self) as cursor:
+        
+            if not date_from:
+                date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
+            cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
+        
+            batch = cursor.fetchmany(portion)
+            while batch:
+                yield batch
+                batch = cursor.fetchmany(portion)
 
     def delete_from_es(self, index_name: str):
         """
@@ -49,17 +61,6 @@ class ETLMovie(ETLFilmwork):
     def __init__(self, es_loader, es_host='http://127.0.0.1/'):
         super().__init__(es_loader, es_host)
     
-    def extract_filmworks(self, cursor, date_from, date_to, portion):
-        records = list()
-
-        if not date_from:
-            date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
-        cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
-        batch = cursor.fetchmany(portion)
-        while batch:
-            yield batch
-            batch = cursor.fetchmany(portion)
-
 
 class ETLSerial(ETLFilmwork):
     SQL = """SELECT movie_serial.id, movie_serial.title, movie_serial.description,
@@ -82,14 +83,3 @@ class ETLSerial(ETLFilmwork):
     def __init__(self, es_loader, es_host='http://127.0.0.1/'):
         super().__init__(es_loader, es_host)
     
-    def extract_filmworks(self, cursor, date_from, date_to, portion):
-        records = list()
-        # cursor = DBConnect().conn_postgres()
-        if not date_from:
-            date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
-        cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
-
-        batch = cursor.fetchmany(portion)
-        while batch:
-            yield batch
-            batch = cursor.fetchmany(portion)
