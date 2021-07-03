@@ -1,15 +1,72 @@
-INFO - 03-Jul-21 09:17:42 - root - Start loop at 2021-07-03 09:17:42.742005
-INFO - 03-Jul-21 09:17:42 - root - The connection to the database movies is established
-INFO - 03-Jul-21 09:17:42 - root - Looking for updates from 2021-07-03 09:14:18.443573
-INFO - 03-Jul-21 09:17:42 - root - The connection to the database movies is closed
-INFO - 03-Jul-21 09:17:42 - root - Pause 2 seconds
-INFO - 03-Jul-21 09:17:44 - root - Start loop at 2021-07-03 09:17:44.757248
-INFO - 03-Jul-21 09:17:44 - root - The connection to the database movies is established
-INFO - 03-Jul-21 09:17:44 - root - Looking for updates from 2021-07-03 09:17:42.748606
-INFO - 03-Jul-21 09:17:44 - root - The connection to the database movies is closed
-INFO - 03-Jul-21 09:17:44 - root - Pause 2 seconds
-INFO - 03-Jul-21 09:17:46 - root - Start loop at 2021-07-03 09:17:46.779041
-INFO - 03-Jul-21 09:17:46 - root - The connection to the database movies is established
-INFO - 03-Jul-21 09:17:46 - root - Looking for updates from 2021-07-03 09:17:44.768317
-INFO - 03-Jul-21 09:17:46 - root - The connection to the database movies is closed
-INFO - 03-Jul-21 09:17:46 - root - Pause 2 seconds
+INFO - 03-Jul-21 10:31:14 - root - Start loop at 2021-07-03 10:31:14.884752
+INFO - 03-Jul-21 10:31:14 - root - The connection to the database movies is established
+INFO - 03-Jul-21 10:31:14 - root - Looking for updates from 2021-07-03 10:30:11.514388
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:15 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:16 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:16 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:16 - root - The connection to the database movies is closed
+INFO - 03-Jul-21 10:31:16 - root - Pause 2 seconds
+INFO - 03-Jul-21 10:31:18 - root - Start loop at 2021-07-03 10:31:18.087406
+INFO - 03-Jul-21 10:31:18 - root - The connection to the database movies is established
+INFO - 03-Jul-21 10:31:18 - root - Looking for updates from 2021-07-03 10:31:14.914804
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:18 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:19 - root - The connection to the database movies is closed
+INFO - 03-Jul-21 10:31:19 - root - Pause 2 seconds
+INFO - 03-Jul-21 10:31:21 - root - Start loop at 2021-07-03 10:31:21.328343
+INFO - 03-Jul-21 10:31:21 - root - The connection to the database movies is established
+INFO - 03-Jul-21 10:31:21 - root - Looking for updates from 2021-07-03 10:31:18.097780
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:21 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - Documents have been successfully uploaded to the index movies
+INFO - 03-Jul-21 10:31:22 - root - The connection to the database movies is closed
+INFO - 03-Jul-21 10:31:22 - root - Pause 2 seconds

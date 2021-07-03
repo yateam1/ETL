@@ -140,6 +140,8 @@ if __name__ == '__main__':
                 last_created = datetime.fromisoformat(last_created)
                 logging.info(f'Looking for updates from {last_created}')
             now = datetime.now()
+            last_created = None
+            
             
             movies.load_to_es('movies', cursor, last_created, now, portion)
             serials.load_to_es('movies', cursor, last_created, now, portion)

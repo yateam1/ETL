@@ -14,9 +14,9 @@ class ETLFilmwork:
         :cursor: соединения с базой данных
         """
 
-        records = self.extract_filmworks(cursor, date_from, date_to, portion)
-        if records:
-            self.es_loader.load_to_es(records, index_name)
+        batches = self.extract_filmworks(cursor, date_from, date_to, portion)
+        for batch in batches:
+            self.es_loader.load_to_es(batch, index_name)
 
     def delete_from_es(self, index_name: str):
         """
@@ -53,8 +53,10 @@ class ETLMovie(ETLFilmwork):
         if not date_from:
             date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
         cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
-        records.extend(cursor.fetchmany(portion))
-        return records
+        batch = cursor.fetchmany(portion)
+        while batch:
+            yield batch
+            batch = cursor.fetchmany(portion)
 
 
 class ETLSerial(ETLFilmwork):
@@ -85,6 +87,7 @@ class ETLSerial(ETLFilmwork):
             date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
         cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
 
-        records.extend(cursor.fetchall())
-
-        return records
+        batch = cursor.fetchmany(portion)
+        while batch:
+            yield batch
+            batch = cursor.fetchmany(portion)
