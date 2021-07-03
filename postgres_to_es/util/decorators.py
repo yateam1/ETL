@@ -23,13 +23,11 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10):
             while timeout < border_sleep_time:
                 try:
                     value = function(*args, **kwargs)
-                    # return value if value else None
-                    next(value)
+                    return value
                 except:
-                    logging.error(f'{function.__name__}Повторная попытка через {timeout} секунд')
+                    logging.error(f'{function.__name__} Повторная попытка через {timeout} секунд')
                     time.sleep(timeout)
                     timeout *= 2 ** factor
-        
         return inner
-    
+  
     return func_wrapper

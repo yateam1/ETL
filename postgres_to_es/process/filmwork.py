@@ -1,6 +1,11 @@
 import datetime
+import logging
 
-from postgres_to_es.storage import conn_postgres
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+from postgres_to_es import config
+from postgres_to_es.util import backoff
 
 
 class ETLFilmwork:
@@ -8,7 +13,9 @@ class ETLFilmwork:
     def __init__(self, es_loader, es_host):
         self.es_loader = es_loader
         self.es_host = es_host
-
+        logging.info(f'Start {self.__class__.__name__} process')
+    
+    @backoff()
     def load_to_es(self, index_name: str, date_from, date_to, portion):
         """
         Основной метод ETL загрузки документов в индекс
@@ -21,16 +28,18 @@ class ETLFilmwork:
             self.es_loader.load_to_es(batch, index_name)
 
     def extract_filmworks(self, date_from, date_to, portion):
-        with conn_postgres(self) as cursor:
         
-            if not date_from:
-                date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
-            cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
-        
-            batch = cursor.fetchmany(portion)
-            while batch:
-                yield batch
+        with psycopg2.connect(dsn=config.dsn) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+
+                if not date_from:
+                    date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
+                cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
+            
                 batch = cursor.fetchmany(portion)
+                while batch:
+                    yield batch
+                    batch = cursor.fetchmany(portion)
 
     def delete_from_es(self, index_name: str):
         """
