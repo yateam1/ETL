@@ -1,4 +1,15 @@
-INFO - 01-Jul-21 18:32:05 - root - The connection to the database is established
-INFO - 01-Jul-21 18:32:07 - root - Documents have been successfully uploaded to the index movies
-INFO - 01-Jul-21 18:32:07 - root - The connection to the database is closed
-INFO - 01-Jul-21 18:32:07 - root - All documents have been removed from the index movies
+INFO - 03-Jul-21 09:17:42 - root - Start loop at 2021-07-03 09:17:42.742005
+INFO - 03-Jul-21 09:17:42 - root - The connection to the database movies is established
+INFO - 03-Jul-21 09:17:42 - root - Looking for updates from 2021-07-03 09:14:18.443573
+INFO - 03-Jul-21 09:17:42 - root - The connection to the database movies is closed
+INFO - 03-Jul-21 09:17:42 - root - Pause 2 seconds
+INFO - 03-Jul-21 09:17:44 - root - Start loop at 2021-07-03 09:17:44.757248
+INFO - 03-Jul-21 09:17:44 - root - The connection to the database movies is established
+INFO - 03-Jul-21 09:17:44 - root - Looking for updates from 2021-07-03 09:17:42.748606
+INFO - 03-Jul-21 09:17:44 - root - The connection to the database movies is closed
+INFO - 03-Jul-21 09:17:44 - root - Pause 2 seconds
+INFO - 03-Jul-21 09:17:46 - root - Start loop at 2021-07-03 09:17:46.779041
+INFO - 03-Jul-21 09:17:46 - root - The connection to the database movies is established
+INFO - 03-Jul-21 09:17:46 - root - Looking for updates from 2021-07-03 09:17:44.768317
+INFO - 03-Jul-21 09:17:46 - root - The connection to the database movies is closed
+INFO - 03-Jul-21 09:17:46 - root - Pause 2 seconds

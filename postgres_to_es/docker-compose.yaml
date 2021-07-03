@@ -12,5 +12,16 @@ services:
     volumes:
       - es_data:/data
 
+  redis:
+    image: redis
+    volumes:
+      - redis_data:/var/lib/redis
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    depends_on:
+      - elasticsearch
+
 volumes:
   es_data:
+  redis_data:

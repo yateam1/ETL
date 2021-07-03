@@ -1,15 +1,34 @@
 import json
 import logging
 from contextlib import contextmanager
+from datetime import datetime
+from time import sleep
 from typing import List
 from urllib.parse import urljoin
 
 import psycopg2
 import requests
 from environs import Env
+from functools import wraps
 from psycopg2.extras import RealDictCursor
+from redis import Redis
+
+from processes import ETLMovie, ETLSerial
+from states import State, RedisStorage, REDIS_HOST
+
+from util import backoff
 
 logger = logging.getLogger()
+
+
+def coroutine(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        fn = func(*args, **kwargs)
+        next(fn)
+        return fn
+
+    return inner
 
 
 @contextmanager
@@ -52,7 +71,7 @@ class ESLoader:
         for row in rows:
             prepared_query.extend([
                 json.dumps({'index': {'_index': index_name, '_id': row['id']}}),
-                json.dumps(row)
+                json.dumps(row),
             ])
         return prepared_query
 
@@ -90,54 +109,56 @@ class ESLoader:
         logger.info(f'All documents have been removed from the index {index_name}')
 
 
-class ETL:
-    def __init__(self, es_loader: ESLoader, es_host='http://127.0.0.1/'):
-        self.es_loader = es_loader
-        self.es_host = es_host
-
-    def extract_filmworks(self, cursor):
-        records = list()
-
-        with open('movies.sql') as sql_file:
-            sql = sql_file.read()
-        cursor.execute(f"""{sql}""")
-        records.extend(cursor.fetchall())
-
-        with open('serials.sql') as sql_file:
-            sql = sql_file.read()
-        cursor.execute(f"""{sql}""")
-        records.extend(cursor.fetchall())
-
-        return records
-
-    def load_to_es(self, index_name: str, cursor):
-        """
-        Основной метод ETL загрузки документов в индекс
-        :index_name: имя индекса
-        :cursor: соединения с базой данных
-        """
-
-        records = self.extract_filmworks(cursor)
-        self.es_loader.load_to_es(records, index_name)
-
-    def delete_from_es(self, index_name: str):
-        """
-        Дополнительный метод для ETL. Удаляет из индекса все документы
-        :index_name: имя индекса
-        """
-        self.es_loader.remove_from_es(index_name)
-
-
 if __name__ == '__main__':
+
+    """
+    params:
+    :portion: размер "пачки", перегружаемых за один в раз
+    :key_name: имя ключа, в котором хранится состояние процесса
+    """
+    portion = 5
+    key_name = 'producer'
 
     logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                         format='%(levelname)s - %(asctime)s - %(name)s - %(message)s',
                         datefmt='%d-%b-%y %H:%M:%S')
+    
+    foo = 0
+    
+    while True:
+        logging.info(f'Start loop at {datetime.now()}')
+        with conn_postgres() as cursor:
+            es_loader = ESLoader("http://127.0.0.1:9200/")
+            movies = ETLMovie(es_loader=es_loader)
+            serials = ETLSerial(es_loader=es_loader)
+            # movies.delete_from_es('movies')
+            
+            storage = RedisStorage(Redis(REDIS_HOST))
+            state = State(storage)
+            last_created = state.get_state(key_name)
+            if last_created:
+                last_created = datetime.fromisoformat(last_created)
+                logging.info(f'Looking for updates from {last_created}')
+            now = datetime.now()
+            
+            movies.load_to_es('movies', cursor, last_created, now, portion)
+            serials.load_to_es('movies', cursor, last_created, now, portion)
+            state.set_state(key_name, now.isoformat())
 
-    es_loader = ESLoader("http://127.0.0.1:9200/")
-    etl = ETL(es_loader=es_loader)
 
-    with conn_postgres() as cursor:
-        etl.load_to_es('movies', cursor)
+        logging.info('Pause 2 seconds')
+        sleep(2)
+        foo += 1
+        if foo == 3:
+            break
+        
+        
 
-    etl.delete_from_es('movies')
+# @coroutine
+# def print_sum():
+#     buf = []
+#     while value := (yield):
+#         buf.append(value)
+#         if len(buf) == 10:
+#             print(sum(buf))
+#             buf.clear()
