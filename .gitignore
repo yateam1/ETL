@@ -53,3 +53,9 @@ doc.html
 
 # staticfiles
 movies_admin/static/
+
+# logfiles
+postgres_to_es/log*.txt
+
+# dumpfiles
+postgres_to_es/dump.*
