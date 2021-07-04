@@ -1,26 +1,44 @@
-INFO - 03-Jul-21 20:55:59 - root - Start loop at 2021-07-03 20:55:59.662986
-INFO - 03-Jul-21 20:55:59 - root - Start ETLMovie
-INFO - 03-Jul-21 20:55:59 - root - Start ETLSerial
-INFO - 03-Jul-21 20:55:59 - root - Looking for updates from None
-ERROR - 03-Jul-21 20:55:59 - root - load_to_es Повторная попытка через 0.1 секунд
-ERROR - 03-Jul-21 20:55:59 - root - load_to_es Повторная попытка через 0.4 секунд
-ERROR - 03-Jul-21 20:56:00 - root - load_to_es Повторная попытка через 1.6 секунд
-ERROR - 03-Jul-21 20:56:01 - root - load_to_es Повторная попытка через 6.4 секунд
-ERROR - 03-Jul-21 20:56:08 - root - load_to_es Повторная попытка через 0.1 секунд
-ERROR - 03-Jul-21 20:56:08 - root - load_to_es Повторная попытка через 0.4 секунд
-ERROR - 03-Jul-21 20:56:08 - root - load_to_es Повторная попытка через 1.6 секунд
-ERROR - 03-Jul-21 20:56:10 - root - load_to_es Повторная попытка через 6.4 секунд
-INFO - 03-Jul-21 20:56:16 - root - Pause 2 seconds to the next ETL processes
-INFO - 03-Jul-21 20:56:18 - root - Start loop at 2021-07-03 20:56:18.684905
-INFO - 03-Jul-21 20:56:18 - root - Start ETLMovie
-INFO - 03-Jul-21 20:56:18 - root - Start ETLSerial
-INFO - 03-Jul-21 20:56:18 - root - Looking for updates from None
-ERROR - 03-Jul-21 20:56:18 - root - load_to_es Повторная попытка через 0.1 секунд
-ERROR - 03-Jul-21 20:56:18 - root - load_to_es Повторная попытка через 0.4 секунд
-ERROR - 03-Jul-21 20:56:19 - root - load_to_es Повторная попытка через 1.6 секунд
-ERROR - 03-Jul-21 20:56:20 - root - load_to_es Повторная попытка через 6.4 секунд
-ERROR - 03-Jul-21 20:56:27 - root - load_to_es Повторная попытка через 0.1 секунд
-ERROR - 03-Jul-21 20:56:27 - root - load_to_es Повторная попытка через 0.4 секунд
-ERROR - 03-Jul-21 20:56:27 - root - load_to_es Повторная попытка через 1.6 секунд
-ERROR - 03-Jul-21 20:56:29 - root - load_to_es Повторная попытка через 6.4 секунд
-INFO - 03-Jul-21 20:56:35 - root - Pause 2 seconds to the next ETL processes
+INFO - 04-Jul-21 20:48:01 - root - Start loop at 2021-07-04 20:48:01.889747
+INFO - 04-Jul-21 20:48:01 - root - Looking for updates from 2021-07-04 20:31:37.724174 to 2021-07-04 20:48:01.891098
+INFO - 04-Jul-21 20:48:01 - root - Start ETLMovie process
+INFO - 04-Jul-21 20:48:01 - root - Start ETLSerial process
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:02 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:03 - root - Pause 2 seconds to the next ETL processes
+INFO - 04-Jul-21 20:48:05 - root - Start loop at 2021-07-04 20:48:05.265133
+INFO - 04-Jul-21 20:48:05 - root - Looking for updates from 2021-07-04 20:48:01.891098 to 2021-07-04 20:48:05.268020
+INFO - 04-Jul-21 20:48:05 - root - Start ETLMovie process
+INFO - 04-Jul-21 20:48:05 - root - Start ETLSerial process
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:05 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:06 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:06 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:06 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:06 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:06 - root - Documents have been successfully uploaded to the index movies
+INFO - 04-Jul-21 20:48:06 - root - Pause 2 seconds to the next ETL processes

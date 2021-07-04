@@ -26,8 +26,8 @@ class ESLoader:
     def load_to_es(self, records: List[dict], index_name: str):
         """
         Отправка запроса в ES и разбор ошибок сохранения данных
-        :records: список словарей данных о кинопроизведениях (фильмы и сериалы)
-        :index_name: имя индекса
+        :param records: список словарей данных о кинопроизведениях (фильмы и сериалы)
+        :param index_name: имя индекса
         """
         prepared_query = self._get_es_bulk_query(records, index_name)
         str_query = '\n'.join(prepared_query) + '\n'
@@ -49,7 +49,7 @@ class ESLoader:
     def remove_from_es(self, index_name: str):
         """
         Сервисный метод очистки индекса от документов
-        :index_name: имя индекса
+        :param index_name: имя индекса
         """
         url = urljoin(self.url, index_name) + '/_delete_by_query'
         str_query = '{"query": {"match_all": {}}}'

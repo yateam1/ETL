@@ -3,11 +3,9 @@ import json
 from datetime import datetime
 
 from redis import Redis, exceptions
-from typing import Any, Optional
+from typing import Any
 
-
-REDIS_HOST = 'localhost'
-REDIS_DICT = 'EtlDict'
+from postgres_to_es.config import REDIS_HOST, REDIS_DICT
 
 
 class BaseStorage:

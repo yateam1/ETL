@@ -9,6 +9,9 @@ from postgres_to_es.util import backoff
 
 
 class ETLFilmwork:
+    """
+    Реализация процессов extract и transform. С последующей передачей в load.
+    """
 
     def __init__(self, es_loader, es_host):
         self.es_loader = es_loader
@@ -19,8 +22,10 @@ class ETLFilmwork:
     def load_to_es(self, index_name: str, date_from, date_to, portion):
         """
         Основной метод ETL загрузки документов в индекс
-        :index_name: имя индекса
-        :cursor: соединения с базой данных
+        :param index_name: имя индекса
+        :param date_from: начало временного интервала поиска изменений в БД
+        :param date_to: окончание временного интервала поиска изменений в БД
+        :param portion: размер пачки данных для ETL-процесса
         """
 
         batches = self.extract_filmworks(date_from, date_to, portion)
@@ -28,7 +33,13 @@ class ETLFilmwork:
             self.es_loader.load_to_es(batch, index_name)
 
     def extract_filmworks(self, date_from, date_to, portion):
-        
+        """
+        Основной метод извлечения записей из базы данных
+        :param date_from: начало временного интервала поиска изменений в БД
+        :param date_to: окончание временного интервала поиска изменений в БД
+        :param portion: размер пачки данных для ETL-процесса
+        :return: порция данных из БД, которые были изменены в заданный временной интервал
+        """
         with psycopg2.connect(dsn=config.dsn) as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
 
@@ -44,12 +55,16 @@ class ETLFilmwork:
     def delete_from_es(self, index_name: str):
         """
         Дополнительный метод для ETL. Удаляет из индекса все документы
-        :index_name: имя индекса
+        :param index_name: имя индекса
         """
         self.es_loader.remove_from_es(index_name)
 
 
 class ETLMovie(ETLFilmwork):
+    """
+    Достаем из БД все измененные фильмы. Критерий - поле modified
+    """
+    
     SQL = """SELECT movie_movie.id, movie_movie.title, movie_movie.description,
                     to_char(movie_movie.creation_date, 'YYYY') AS creation_year, movie_movie.rating, 'movie' AS type,
                     ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
@@ -72,6 +87,10 @@ class ETLMovie(ETLFilmwork):
     
 
 class ETLSerial(ETLFilmwork):
+    """
+    Достаем из БД все измененные сериалы. Критерий - поле modified
+    """
+
     SQL = """SELECT movie_serial.id, movie_serial.title, movie_serial.description,
                 to_char(movie_serial.creation_date, 'YYYY') AS creation_year, movie_serial.rating, 'serial' AS type,
                 ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
