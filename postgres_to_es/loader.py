@@ -49,7 +49,9 @@ if __name__ == '__main__':
             last_created = datetime.fromisoformat(last_created)
         now = datetime.now()
         logging.info(f'Looking for updates from {last_created} to {now}')
- 
+        
+        last_created = None  # FIXME удалить, используется для тестирования
+        
         es_loader = ESLoader("http://127.0.0.1:9200/")
         
         # Определяем ETL-процессы

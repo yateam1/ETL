@@ -56,6 +56,7 @@ movies_admin/static/
 
 # logfiles
 postgres_to_es/log*.txt
+postgres_to_es/*.log
 
 # dumpfiles
 postgres_to_es/dump.*
