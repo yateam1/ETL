@@ -4,10 +4,15 @@ from typing import List
 from urllib.parse import urljoin
 
 import requests
+from elasticsearch import Elasticsearch
+
+from postgres_to_es.config import ES_HOST, ES_PORT, ES_INDEX
 
 
 class ESLoader:
     def __init__(self, url: str):
+        self.es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT}])
+        self.es.indices.create(index=ES_INDEX, ignore=400)
         self.url = url
 
     def _get_es_bulk_query(self, rows: List[dict], index_name: str) -> List[str]:

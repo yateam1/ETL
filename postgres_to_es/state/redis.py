@@ -1,36 +1,63 @@
-import abc
+import datetime
 import json
-from datetime import datetime
-
-from redis import Redis, exceptions
+import logging
+from abc import ABC, abstractmethod
 from typing import Any
 
-from postgres_to_es.config import REDIS_HOST, REDIS_DICT
+from redis import Redis
+
+from postgres_to_es.config import STATE_DB
 
 
-class BaseStorage:
-    @abc.abstractmethod
+# class DateTimeEncoder(json.JSONEncoder):
+#
+#     def default(self, obj):
+#         if isinstance(obj, (datetime.datetime, datetime.date, datetime.time)):
+#             return obj.isoformat()
+#         elif isinstance(obj, str):
+#             try:
+#                 datetime.time.strptime(obj, "%Y-%m-%dT%H:%M:%S")
+#             except ValueError:
+#                 return super(DateTimeEncoder, self).default(obj)
+#             return datetime.datetime.fromisoformat(obj)
+#         return super(DateTimeEncoder, self).default(obj)
+
+
+class BaseStorage(ABC):
+    @abstractmethod
     def save_state(self, state: dict) -> None:
         """Сохранить состояние в постоянное хранилище"""
         pass
     
-    @abc.abstractmethod
+    @abstractmethod
     def retrieve_state(self) -> dict:
         """Загрузить состояние локально из постоянного хранилища"""
         pass
 
 
 class RedisStorage(BaseStorage):
+    """
+    Класс хранилища, в котором будут запоминаться состояния.
+    В данной реализации хранилищем выступает Redis.
+    """
+
     def __init__(self, redis_adapter: Redis):
         self.redis_adapter = redis_adapter
     
     def save_state(self, state: dict) -> None:
-        """Сохранить состояние в постоянное хранилище"""
-        self.redis_adapter.set(REDIS_DICT, json.dumps(state))
+        """
+        Сохранить состояние в постоянное хранилище.
+        :param state: словарь состояний
+        """
+        # encoder = DateTimeEncoder()
+        # state = encoder.encode(state)
+        self.redis_adapter.set(STATE_DB, json.dumps(state))
     
     def retrieve_state(self) -> dict:
-        """Загрузить состояние локально из постоянного хранилища"""
-        data = self.redis_adapter.get(REDIS_DICT)
+        """
+        Загрузить состояние локально из постоянного хранилища.
+        """
+        data = self.redis_adapter.get(STATE_DB)
         if data is None:
             return {}
         return json.loads(data)
@@ -39,8 +66,6 @@ class RedisStorage(BaseStorage):
 class State:
     """
     Класс для хранения состояния при работе с данными, чтобы постоянно не перечитывать данные с начала.
-    Здесь представлена реализация с сохранением состояния в файл.
-    В целом ничего не мешает поменять это поведение на работу с БД или распределённым хранилищем.
     """
     
     def __init__(self, storage: BaseStorage):
@@ -55,26 +80,7 @@ class State:
     def get_state(self, key: str) -> Any:
         """Получить состояние по определённому ключу"""
         state = self.storage.retrieve_state()
+        # encoder = DateTimeEncoder()
+        # state = encoder.encode(state)
+        # print(state, type(state))
         return state.get(key)
-
-
-if __name__ == '__main__':
-    """
-    Пример использования
-    Обратите внимание на приведение datetime к строке и наоборот
-    """
-    key_name = 'producer'
-    storage = RedisStorage(Redis(REDIS_HOST))
-    print(Redis(REDIS_HOST))
-    state = State(storage)
-    
-    try:
-        created_at = state.get_state(key_name)
-    except exceptions.ConnectionError as error_message:
-        print(error_message)
-    else:
-        print(f'Value of key {key_name} is', created_at, type(created_at))
-        
-        state.set_state(key_name, datetime.now().isoformat())
-        created_at = datetime.fromisoformat(state.get_state(key_name))
-        print(f'Value of key {key_name} is', created_at, type(created_at))

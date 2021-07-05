@@ -1,11 +1,12 @@
+
 import datetime
 import logging
 
+import backoff as backoff
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from postgres_to_es import config
-from postgres_to_es.util import backoff
 
 
 class ETLFilmwork:
@@ -17,27 +18,27 @@ class ETLFilmwork:
         self.es_loader = es_loader
         self.es_host = es_host
         logging.info(f'Start {self.__class__.__name__} process')
-    
-    @backoff()
-    def load_to_es(self, index_name: str, date_from, date_to, portion):
+        
+    def load_to_es(self, index_name: str, date_from, date_to, batch_size):
         """
         Основной метод ETL загрузки документов в индекс
         :param index_name: имя индекса
         :param date_from: начало временного интервала поиска изменений в БД
         :param date_to: окончание временного интервала поиска изменений в БД
-        :param portion: размер пачки данных для ETL-процесса
+        :param batch_size: размер пачки данных для ETL-процесса
         """
 
-        batches = self.extract_filmworks(date_from, date_to, portion)
+        batches = self.extract_filmworks(date_from, date_to, batch_size)
         for batch in batches:
             self.es_loader.load_to_es(batch, index_name)
 
-    def extract_filmworks(self, date_from, date_to, portion):
+    @backoff.on_predicate(backoff.expo, base=0.1, factor=2, max_value=10)
+    def extract_filmworks(self, date_from, date_to, batch_size):
         """
         Основной метод извлечения записей из базы данных
         :param date_from: начало временного интервала поиска изменений в БД
         :param date_to: окончание временного интервала поиска изменений в БД
-        :param portion: размер пачки данных для ETL-процесса
+        :param batch_size: размер пачки данных для ETL-процесса
         :return: порция данных из БД, которые были изменены в заданный временной интервал
         """
         with psycopg2.connect(dsn=config.dsn) as conn:
@@ -47,17 +48,10 @@ class ETLFilmwork:
                     date_from = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
                 cursor.execute(f"""{self.SQL}""", {'date_from': date_from, 'date_to': date_to})
             
-                batch = cursor.fetchmany(portion)
+                batch = cursor.fetchmany(batch_size)
                 while batch:
                     yield batch
-                    batch = cursor.fetchmany(portion)
-
-    def delete_from_es(self, index_name: str):
-        """
-        Дополнительный метод для ETL. Удаляет из индекса все документы
-        :param index_name: имя индекса
-        """
-        self.es_loader.remove_from_es(index_name)
+                    batch = cursor.fetchmany(batch_size)
 
 
 class ETLMovie(ETLFilmwork):
