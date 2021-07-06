@@ -1,25 +1,13 @@
 from datetime import datetime
-from functools import wraps
-from pprint import pprint
 
 import psycopg2
-from elasticsearch.helpers import bulk
 from psycopg2.extras import RealDictCursor
 
-from postgres_to_es.config import ELASTICSEARCH_INDEX, dsn, es
+from postgres_to_es.config import dsn
+from .general import ETLGeneral
 
 
-def coroutine(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        fn = func(*args, **kwargs)
-        next(fn)
-        return fn
-
-    return inner
-
-
-class ETLMovie:
+class ETLMovie(ETLGeneral):
     SQL = """SELECT movie_movie.id, movie_movie.title, movie_movie.description,
                     to_char(movie_movie.creation_date, 'YYYY') AS creation_year, movie_movie.rating, 'movie' AS type,
                     ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
@@ -44,11 +32,12 @@ class ETLMovie:
         :param date_to: окончание временного интервала поиска изменений в БД
         :param batch_size: размер пачки данных для ETL-процесса
         """
-        self.date_from, self.date_to, self.batch_size = date_from, date_to, batch_size
+        super().__init__(date_from, date_to, batch_size)
     
     def extract(self, batch):
         """
         Основной метод извлечения записей из базы данных
+        :param batch: пачка извлеченных из БД данных
         :return: порция данных из БД, которые были изменены в заданный временной интервал
         """
         with psycopg2.connect(dsn=dsn) as conn:
@@ -62,31 +51,3 @@ class ETLMovie:
                 while movies:
                     batch.send(movies)
                     movies = cursor.fetchmany(self.batch_size)
-
-    @coroutine
-    def transform(self, batch):
-        enrich = lambda row: {
-            '_index': ELASTICSEARCH_INDEX,
-            '_id': row['id'],
-            'title': row['title'],
-            'description': row['description'],
-            'creation_year': int(row['creation_year']),
-            'rating': row['rating'],
-            'type': row['type'],
-            'genres': row['genres'],
-            'actors': row['actors'],
-            'writers': row['writers'],
-            'directors': row['directors'],
-        }
-        
-        while True:
-            movies = (yield)
-            documents = map(enrich, movies)
-            batch.send(documents)
- 
-    @coroutine
-    def load(self):
-        while True:
-            batch = (yield)
-            bulk(client=es, actions=batch, chunk_size=self.batch_size, request_timeout=200)
-

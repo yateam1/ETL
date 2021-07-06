@@ -5,10 +5,9 @@ from time import sleep
 
 from redis import Redis
 
-# from postgres_to_es.process import ETLGenre, ETLPerson, ETLMoviePersonRole, ETLSerialPersonRole
-from process import ETLMovie
+from handler import movie_etl, serial_etl, genre_etl, person_etl, moviepersonrole_etl, serialpersonrole_etl
 from state import State, RedisStorage
-from postgres_to_es.config import REDIS_HOST, STATE_KEY
+from config import REDIS_HOST, STATE_KEY
 
 
 def get_args():
@@ -27,18 +26,8 @@ def get_args():
     return args.batch_size, args.interval, args.test_pass
 
 
-if __name__ == '__main__':
-    
-    batch_size, interval, test_pass = get_args()  # Получаем аргументы командной строки.
-    
-    logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
-                        format='%(levelname)s - %(asctime)s - %(name)s - %(message)s',
-                        datefmt='%d-%b-%y %H:%M:%S')
-    logging.getLogger('backoff').addHandler(logging.StreamHandler())
-    
+def loop(batch_size, interval, test_pass):
     counter = 0
-    
-    
     while True:
         logging.info(f'Start loop at {datetime.now()}')
         
@@ -54,26 +43,13 @@ if __name__ == '__main__':
         
         last_created = None  # FIXME удалить, используется для тестирования
         
-        # es_loader = ESLoader("http://127.0.0.1:9200/")
-        
-        # Определяем ETL-процессы
-        etl_movie = ETLMovie(last_created, now, batch_size)
-        load_movies = etl_movie.load()
-        transform_movies = etl_movie.transform(load_movies)
-        etl_movie.extract(transform_movies)
-        # serials = ETLSerial(es_loader=es_loader)
-        # genres = ETLGenre(es_loader=es_loader)
-        # persons = ETLPerson(es_loader=es_loader)
-        # movie_roles = ETLMoviePersonRole(es_loader=es_loader)
-        # serial_roles = ETLSerialPersonRole(es_loader=es_loader)
-        
         # Запускаем ETL-процессы
-        # movies.load_to_es('movies', last_created, now, batch_size)
-        # serials.load_to_es('movies', last_created, now, batch_size)
-        # TODO genres.load_to_es('movies', last_created, now, batch_size)
-        # TODO persons.load_to_es('movies', last_created, now, batch_size)
-        # TODO movie_roles.load_to_es('movies', last_created, now, batch_size)
-        # TODO movie_roles.load_to_es('movies', last_created, now, batch_size)
+        movie_etl(last_created, now, batch_size)
+        serial_etl(last_created, now, batch_size)
+        # genre_etl(last_created, now, batch_size)
+        # person_etl(last_created, now, batch_size)
+        # moviepersonrole_etl(last_created, now, batch_size)
+        # serialpersonrole_etl(last_created, now, batch_size)
         
         # TODO Если процессы завершились успешно, обновляем дату в REDIS
         state.set_state(STATE_KEY, now.isoformat())
@@ -86,3 +62,15 @@ if __name__ == '__main__':
             counter += 1
         if test_pass and counter == test_pass:
             break
+
+
+if __name__ == '__main__':
+    
+    batch_size, interval, test_pass = get_args()  # Получаем аргументы командной строки.
+    
+    logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
+                        format='%(levelname)s - %(asctime)s - %(name)s - %(message)s',
+                        datefmt='%d-%b-%y %H:%M:%S')
+    logging.getLogger('backoff').addHandler(logging.StreamHandler())
+    
+    loop(batch_size, interval, test_pass)
