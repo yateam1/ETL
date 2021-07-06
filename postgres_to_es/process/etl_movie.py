@@ -1,10 +1,12 @@
 from datetime import datetime
 from functools import wraps
+from pprint import pprint
 
 import psycopg2
+from elasticsearch.helpers import bulk
 from psycopg2.extras import RealDictCursor
 
-from postgres_to_es import config
+from postgres_to_es.config import ELASTICSEARCH_INDEX, dsn, es
 
 
 def coroutine(func):
@@ -49,7 +51,7 @@ class ETLMovie:
         Основной метод извлечения записей из базы данных
         :return: порция данных из БД, которые были изменены в заданный временной интервал
         """
-        with psycopg2.connect(dsn=config.dsn) as conn:
+        with psycopg2.connect(dsn=dsn) as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
     
                 if not self.date_from:
@@ -62,10 +64,29 @@ class ETLMovie:
                     movies = cursor.fetchmany(self.batch_size)
 
     @coroutine
+    def transform(self, batch):
+        enrich = lambda row: {
+            '_index': ELASTICSEARCH_INDEX,
+            '_id': row['id'],
+            'title': row['title'],
+            'description': row['description'],
+            'creation_year': int(row['creation_year']),
+            'rating': row['rating'],
+            'type': row['type'],
+            'genres': row['genres'],
+            'actors': row['actors'],
+            'writers': row['writers'],
+            'directors': row['directors'],
+        }
+        
+        while True:
+            movies = (yield)
+            documents = map(enrich, movies)
+            batch.send(documents)
+ 
+    @coroutine
     def load(self):
         while True:
             batch = (yield)
-            print('-----------------------------------------------')
-            print(len(batch))
-            print('-----------------------------------------------')
-            print(batch)
+            bulk(client=es, actions=batch, chunk_size=self.batch_size, request_timeout=200)
+

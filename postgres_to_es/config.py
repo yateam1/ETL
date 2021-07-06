@@ -1,3 +1,4 @@
+from elasticsearch import Elasticsearch
 from environs import Env
 from psycopg2.extensions import make_dsn
 
@@ -19,7 +20,11 @@ STATE_DB = 'Movie_ETL'
 STATE_KEY = 'producer'
 
 # Параметры подключения к Elastic Search
-ES_HOST = env.str('ES_HOST', default='localhost')
-ES_PORT = env.str('ES_PORT', default='9200')
-ES_INDEX = env.str('INDEX_NAME', default='movies')
+ELASTICSEARCH_HOST = env.str('ELASTICSEARCH_HOST', default='localhost')
+ELASTICSEARCH_PORT = env.str('ELASTICSEARCH_PORT', default='9200')
+ELASTICSEARCH_INDEX = env.str('ELASTICSEARCH_INDEX', default='movies')
+es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}])
+es.indices.create(index=ELASTICSEARCH_INDEX, ignore=400)
+
+
 

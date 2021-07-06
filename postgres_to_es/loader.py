@@ -59,7 +59,8 @@ if __name__ == '__main__':
         # Определяем ETL-процессы
         etl_movie = ETLMovie(last_created, now, batch_size)
         load_movies = etl_movie.load()
-        etl_movie.extract(load_movies)
+        transform_movies = etl_movie.transform(load_movies)
+        etl_movie.extract(transform_movies)
         # serials = ETLSerial(es_loader=es_loader)
         # genres = ETLGenre(es_loader=es_loader)
         # persons = ETLPerson(es_loader=es_loader)
