@@ -44,12 +44,12 @@ def loop(batch_size, interval, test_pass):
         last_created = None  # FIXME удалить, используется для тестирования
         
         # Запускаем ETL-процессы
-        movie_etl(last_created, now, batch_size)
-        serial_etl(last_created, now, batch_size)
+        # movie_etl(last_created, now, batch_size)
+        # serial_etl(last_created, now, batch_size)
         # genre_etl(last_created, now, batch_size)
         # person_etl(last_created, now, batch_size)
-        # moviepersonrole_etl(last_created, now, batch_size)
-        # serialpersonrole_etl(last_created, now, batch_size)
+        moviepersonrole_etl(last_created, now, batch_size)
+        serialpersonrole_etl(last_created, now, batch_size)
         
         # TODO Если процессы завершились успешно, обновляем дату в REDIS
         state.set_state(STATE_KEY, now.isoformat())

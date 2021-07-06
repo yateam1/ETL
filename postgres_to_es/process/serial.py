@@ -10,7 +10,7 @@ from .general import ETLGeneral
 class ETLSerial(ETLGeneral):
 
     SQL = """SELECT movie_serial.id, movie_serial.title, movie_serial.description,
-                to_char(movie_serial.creation_date, 'YYYY') AS creation_year, movie_serial.rating, 'serial' AS type,
+                movie_serial.creation_date, movie_serial.rating, 'serial' AS type,
                 ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
                 CONCAT(' ', movie_person.first_name)) ) FILTER (WHERE movie_serialpersonrole.role = 0) AS actors,
                 ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,

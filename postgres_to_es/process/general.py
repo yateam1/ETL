@@ -22,7 +22,7 @@ class ETLGeneral:
             '_id': row['id'],
             'title': row['title'],
             'description': row['description'],
-            'creation_year': int(row['creation_year']),
+            'creation_date': row['creation_date'],
             'rating': row['rating'],
             'type': row['type'],
             'genres': row['genres'],
