@@ -56,13 +56,11 @@ class Loop(BaseModel):
                 person_etl(batch_size)
                 moviepersonrole_etl(batch_size)
                 serialpersonrole_etl(batch_size)
-            except psycopg2.OperationalError:
+            except psycopg2.OperationalError as e:
                 pass
-            except elasticsearch.exceptions.ConnectionError:
+            except elasticsearch.exceptions.ConnectionError as e:
                 pass
-            except redis.exceptions.ConnectionError:
-                pass
-            else:
+            except redis.exceptions.ConnectionError as e:
                 pass
         
             logging.info(f'Pause {interval} seconds to the next ETL processes')
@@ -103,6 +101,6 @@ if __name__ == '__main__':
     try:
         loop = Loop(batch_size=batch_size, interval=interval, test_pass=test_pass)
     except ValidationError as e:
-        logging.info(f'Exception {e.json()}')
+        logging.error(f'Exception {e.json()}')
     else:
         loop.start()
