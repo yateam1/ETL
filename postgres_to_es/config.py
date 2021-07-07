@@ -1,6 +1,9 @@
 from elasticsearch import Elasticsearch
 from environs import Env
 from psycopg2.extensions import make_dsn
+from redis import Redis
+
+from postgres_to_es.state import RedisStorage
 
 env = Env()
 env.read_env()
@@ -17,7 +20,7 @@ dsn = make_dsn(POSTGRES_URI)
 # Параметры подключения к Redis
 REDIS_HOST = env.str('REDIS_HOST', default='localhost')
 STATE_DB = 'Movie_ETL'
-
+storage = RedisStorage(Redis(REDIS_HOST), STATE_DB)
 
 # Параметры подключения к Elastic Search
 ELASTICSEARCH_HOST = env.str('ELASTICSEARCH_HOST', default='localhost')

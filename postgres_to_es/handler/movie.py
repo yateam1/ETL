@@ -5,11 +5,10 @@ import backoff
 import elasticsearch
 import psycopg2
 import redis
-from redis import Redis
 
-from postgres_to_es.config import REDIS_HOST, ELASTICSEARCH_INDEX, es
+from postgres_to_es.config import ELASTICSEARCH_INDEX, es, storage
 from postgres_to_es.process import ETLMovie
-from postgres_to_es.state import State, RedisStorage
+from postgres_to_es.state import State
 
 
 @backoff.on_exception(backoff.expo,
@@ -18,7 +17,7 @@ from postgres_to_es.state import State, RedisStorage
                        redis.exceptions.ConnectionError),
                       max_time=10)
 def movie_etl(batch_size):
-    storage = RedisStorage(Redis(REDIS_HOST))
+    
     state = State(storage)
     last_created = state.get_state(__name__)
     now = datetime.now()

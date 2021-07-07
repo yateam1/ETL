@@ -5,11 +5,10 @@ import backoff
 import elasticsearch
 import psycopg2
 import redis
-from redis import Redis
 
-from postgres_to_es.config import ELASTICSEARCH_INDEX, es, REDIS_HOST
+from postgres_to_es.config import ELASTICSEARCH_INDEX, es, storage
 from postgres_to_es.process import ETLSerialPersonRole
-from postgres_to_es.state import RedisStorage, State
+from postgres_to_es.state import State
 
 
 @backoff.on_exception(backoff.expo,
@@ -18,8 +17,7 @@ from postgres_to_es.state import RedisStorage, State
                        redis.exceptions.ConnectionError),
                       max_time=10)
 def serialpersonrole_etl(batch_size):
-
-    storage = RedisStorage(Redis(REDIS_HOST))
+    
     state = State(storage)
     last_created = state.get_state(__name__)
     now = datetime.now()

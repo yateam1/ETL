@@ -5,8 +5,6 @@ from typing import Any
 
 from redis import Redis
 
-from postgres_to_es.config import STATE_DB
-
 
 class BaseStorage(ABC):
     @abstractmethod
@@ -26,21 +24,22 @@ class RedisStorage(BaseStorage):
     В данной реализации хранилищем выступает Redis.
     """
 
-    def __init__(self, redis_adapter: Redis):
+    def __init__(self, redis_adapter: Redis, storage_db: str):
         self.redis_adapter = redis_adapter
+        self.storage_db = storage_db
     
     def save_state(self, state: dict) -> None:
         """
         Сохранить состояние в постоянное хранилище.
         :param state: словарь состояний
         """
-        self.redis_adapter.set(STATE_DB, json.dumps(state))
+        self.redis_adapter.set(self.storage_db, json.dumps(state))
     
     def retrieve_state(self) -> dict:
         """
         Загрузить состояние локально из постоянного хранилища.
         """
-        state = self.redis_adapter.get(STATE_DB)
+        state = self.redis_adapter.get(self.storage_db)
         if state is None:
             return {}
         state = json.loads(state)
