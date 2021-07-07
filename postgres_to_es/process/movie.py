@@ -8,7 +8,7 @@ from .general import ETLGeneral
 
 
 class ETLMovie(ETLGeneral):
-    SQL = """SELECT movie_movie.id, movie_movie.title, movie_movie.description,
+    SQL_MOVIE = """SELECT movie_movie.id, movie_movie.title, movie_movie.description,
                     movie_movie.creation_date, movie_movie.rating, 'movie' AS type,
                     ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
                     CONCAT(' ', movie_person.first_name)) ) FILTER (WHERE movie_moviepersonrole.role = 0) AS actors,
@@ -45,7 +45,7 @@ class ETLMovie(ETLGeneral):
     
                 if not self.date_from:
                     self.date_from = datetime(1900, 1, 1, 0, 0, 0, 0)
-                cursor.execute(f"""{self.SQL}""", {'date_from': self.date_from, 'date_to': self.date_to})
+                cursor.execute(f"""{self.SQL_MOVIE}""", {'date_from': self.date_from, 'date_to': self.date_to})
             
                 movies = cursor.fetchmany(self.batch_size)
                 while movies:

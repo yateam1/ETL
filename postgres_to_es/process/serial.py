@@ -9,7 +9,7 @@ from .general import ETLGeneral
 
 class ETLSerial(ETLGeneral):
 
-    SQL = """SELECT movie_serial.id, movie_serial.title, movie_serial.description,
+    SQL_SERIAL = """SELECT movie_serial.id, movie_serial.title, movie_serial.description,
                 movie_serial.creation_date, movie_serial.rating, 'serial' AS type,
                 ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
                 CONCAT(' ', movie_person.first_name)) ) FILTER (WHERE movie_serialpersonrole.role = 0) AS actors,
@@ -46,7 +46,7 @@ class ETLSerial(ETLGeneral):
             
                 if not self.date_from:
                     self.date_from = datetime(1900, 1, 1, 0, 0, 0, 0)
-                cursor.execute(f"""{self.SQL}""", {'date_from': self.date_from, 'date_to': self.date_to})
+                cursor.execute(f"""{self.SQL_SERIAL}""", {'date_from': self.date_from, 'date_to': self.date_to})
             
                 movies = cursor.fetchmany(self.batch_size)
                 while movies:
