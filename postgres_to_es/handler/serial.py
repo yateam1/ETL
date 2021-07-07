@@ -5,6 +5,7 @@ import redis
 
 from postgres_to_es.process import ETLSerial
 
+
 @backoff.on_exception(backoff.expo,
                       (elasticsearch.exceptions.ConnectionError,
                        psycopg2.OperationalError,
