@@ -32,10 +32,10 @@ def loop(batch_size, interval, test_pass):
         logging.info(f'Start loop at {datetime.now()}')
 
         try:
-            # movie_etl(batch_size)
-            # serial_etl(batch_size)
-            # genre_etl(batch_size)
-            # person_etl(batch_size)
+            movie_etl(batch_size)
+            serial_etl(batch_size)
+            genre_etl(batch_size)
+            person_etl(batch_size)
             moviepersonrole_etl(batch_size)
             serialpersonrole_etl(batch_size)
         except psycopg2.OperationalError:

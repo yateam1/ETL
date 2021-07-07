@@ -1,9 +1,15 @@
+import logging
+from datetime import datetime
+
 import backoff
 import elasticsearch
 import psycopg2
 import redis
+from redis import Redis
 
+from postgres_to_es.config import ELASTICSEARCH_INDEX, REDIS_HOST, es
 from postgres_to_es.process import ETLPerson
+from postgres_to_es.state import State, RedisStorage
 
 
 @backoff.on_exception(backoff.expo,
@@ -11,7 +17,15 @@ from postgres_to_es.process import ETLPerson
                        psycopg2.OperationalError,
                        redis.exceptions.ConnectionError),
                       max_time=10)
-def person_etl(last_created, now, batch_size):
+def person_etl(batch_size):
+    storage = RedisStorage(Redis(REDIS_HOST))
+    state = State(storage)
+    last_created = state.get_state(__name__)
+    now = datetime.now()
+    logging.info(f'{__name__}: looking for updates in from {last_created} to {now}')
+    
+    es.indices.create(index=ELASTICSEARCH_INDEX, ignore=400)
+    
     etl_person = ETLPerson(last_created, now, batch_size)
     load_movies = etl_person.load()
     transform_movies = etl_person.transform(load_movies)
@@ -21,3 +35,5 @@ def person_etl(last_created, now, batch_size):
 
     serilas = etl_person.extract_serial(transform_movies)
     etl_person.extract_serial_id(serilas)
+
+    state.set_state(__name__, now)

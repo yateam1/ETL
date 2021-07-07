@@ -22,13 +22,9 @@ def serialpersonrole_etl(batch_size):
     storage = RedisStorage(Redis(REDIS_HOST))
     state = State(storage)
     last_created = state.get_state(__name__)
-    if last_created:
-        last_created = datetime.fromisoformat(last_created)
     now = datetime.now()
-    logging.info(f'Looking for updates from {last_created} to {now}')
+    logging.info(f'{__name__}: looking for updates in from {last_created} to {now}')
     
-    last_created = None  # FIXME удалить, используется для тестирования
-
     es.indices.create(index=ELASTICSEARCH_INDEX, ignore=400)
 
     etl_serialpersonrole = ETLSerialPersonRole(last_created, now, batch_size)
@@ -37,5 +33,5 @@ def serialpersonrole_etl(batch_size):
     serials = etl_serialpersonrole.extract_serial(transform_movies)
     etl_serialpersonrole.extract_serial_id(serials)
 
-    state.set_state(__name__, now.isoformat())  # Если процессы завершились успешно, обновляем дату в REDIS
+    state.set_state(__name__, now)
 
