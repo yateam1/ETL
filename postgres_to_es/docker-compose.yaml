@@ -13,10 +13,10 @@ services:
       - es_data:/data
 
   redis:
-    image: redis
+    image: redis:alpine
     volumes:
-      - redis_data:/var/lib/redis
       - ./state/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
     ports:
       - 6379:6379
     depends_on:
