@@ -16,7 +16,14 @@ from postgres_to_es.state import State
                        psycopg2.OperationalError,
                        redis.exceptions.ConnectionError),
                       max_time=10)
-def movie_etl(batch_size):
+def movie_etl(batch_size: int):
+    """
+    Запускаем ETL-процесс поиска изменений в таблице фильмов(movie).
+    Временной период выборки изменений определяем между датой в storage и текущими датой и временем.
+    Если все требуемые сервисы доступны и данные перегружены, обновляем дату в storage.
+    :param batch_size:
+    :return:
+    """
     
     state = State(storage)
     last_created = state.get_state(__name__)
