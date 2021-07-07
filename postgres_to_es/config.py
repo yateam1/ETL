@@ -17,14 +17,10 @@ dsn = make_dsn(POSTGRES_URI)
 # Параметры подключения к Redis
 REDIS_HOST = env.str('REDIS_HOST', default='localhost')
 STATE_DB = 'Movie_ETL'
-STATE_KEY = 'producer'
+
 
 # Параметры подключения к Elastic Search
 ELASTICSEARCH_HOST = env.str('ELASTICSEARCH_HOST', default='localhost')
 ELASTICSEARCH_PORT = env.str('ELASTICSEARCH_PORT', default='9200')
 ELASTICSEARCH_INDEX = env.str('ELASTICSEARCH_INDEX', default='movies')
 es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}])
-es.indices.create(index=ELASTICSEARCH_INDEX, ignore=400)
-
-
-
