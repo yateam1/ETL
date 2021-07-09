@@ -9,11 +9,16 @@ def get_args():
     :return test_pass: если данный параметр указан, то цикл остановится через указанное в нем кол-во повторений
     """
     parser = argparse.ArgumentParser(description='ETL process parameters')
-    parser.add_argument("--batch_size", type=int, default=5, help="Batch size to load in Elastic Search")
-    parser.add_argument("--interval", type=int, default=2, help="Seconds between iteration")
-    parser.add_argument("--test_pass", type=int, default=0, help="Number of test passes")
+    parser.add_argument('--index', type=str, default='movies', help='Name of index for Elastic Search')
+    parser.add_argument('--batch_size', type=int, default=5, help='Batch size to load in Elastic Search')
+    parser.add_argument('--interval', type=int, default=2, help='Seconds between iteration')
+    parser.add_argument('--test_pass', type=int, default=0, help='Number of test passes')
+    # parser.add_argument('--debug', type=bool, default=True)# action=argparse.BooleanOptionalAction)
     
     args = parser.parse_args()
+    # print(args.debug)
+    if len(args.index) < 1:
+        raise ValueError('the length of parameter index should be greater than 0')
     if args.batch_size < 1:
         raise ValueError('the parameter batch_size should be greater than 0')
     if args.interval < 1:
@@ -21,4 +26,4 @@ def get_args():
     if args.test_pass < 0:
         raise ValueError('the parameter test_pass should be greater than or equal 0')
     
-    return args.batch_size, args.interval, args.test_pass
+    return args.index, args.batch_size, args.interval, args.test_pass
