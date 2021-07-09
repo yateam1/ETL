@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 import psycopg2
@@ -37,8 +38,7 @@ def extract_filmworks_by_ids(batch):
     with psycopg2.connect(dsn=dsn) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             
-            while True:
-                filmwork_ids = (yield)
+            while filmwork_ids := (yield):
                 filmwork_ids = [movie['serial_id'] for movie in filmwork_ids]
                 cursor.execute(f"""{SQL_GET_SERIALS_BY_IDS}""", {'serial_ids': filmwork_ids})
                 filmworks = cursor.fetchmany(batch_size)
@@ -49,5 +49,6 @@ def extract_filmworks_by_ids(batch):
 
 def extract_serials(transform_function, last_created, now):
     for query in queries:
+        logging.info(f'Search for modified records: {query}')
         extract_filmworks = extract_filmworks_by_ids(transform_function)
         extract_filmwork_ids(extract_filmworks, query, last_created, now)

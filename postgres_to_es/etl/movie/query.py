@@ -45,8 +45,16 @@ SQL_GET_FROM_MOVIEPERSONROLE_MOVIE_IDS = """
 """
 
 
+SQL_GET_FROM_MOVIE_MOVIE_IDS = """
+    SELECT distinct movie_movie.id AS movie_id
+        FROM content.movie_movie
+         WHERE movie_movie.modified BETWEEN %(date_from)s AND %(date_to)s
+"""
+
+
 queries = [
     SQL_GET_FROM_PERSON_MOVIE_IDS,
     SQL_GET_FROM_GENRE_MOVIE_IDS,
     SQL_GET_FROM_MOVIEPERSONROLE_MOVIE_IDS,
+    SQL_GET_FROM_MOVIE_MOVIE_IDS,
 ]

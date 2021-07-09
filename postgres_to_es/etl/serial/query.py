@@ -45,8 +45,16 @@ SQL_GET_FROM_SERIALPERSONROLE_SERIAL_IDS = """
 """
 
 
+SQL_GET_FROM_SERIAL_SERIAL_IDS = """
+    SELECT distinct movie_serial.id AS serial_id
+    FROM content.movie_serial
+         WHERE movie_serial.modified BETWEEN %(date_from)s AND %(date_to)s
+"""
+
+
 queries = [
     SQL_GET_FROM_PERSON_SERIAL_IDS,
     SQL_GET_FROM_GENRE_SERIAL_IDS,
     SQL_GET_FROM_SERIALPERSONROLE_SERIAL_IDS,
+    SQL_GET_FROM_SERIAL_SERIAL_IDS,
 ]

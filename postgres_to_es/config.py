@@ -18,4 +18,3 @@ STATE_DB = 'Movie_ETL'
 # Параметры подключения к Elastic Search
 ELASTICSEARCH_HOST = env.str('ELASTICSEARCH_HOST', default='localhost')
 ELASTICSEARCH_PORT = env.str('ELASTICSEARCH_PORT', default='9200')
-ELASTICSEARCH_INDEX = env.str('ELASTICSEARCH_INDEX', default='movies')

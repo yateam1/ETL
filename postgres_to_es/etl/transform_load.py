@@ -1,14 +1,13 @@
 from elasticsearch.helpers import bulk
 
-from postgres_to_es.config import ELASTICSEARCH_INDEX
 from postgres_to_es.etl.coroutine import coroutine
-from postgres_to_es.loader import es, batch_size
+from postgres_to_es.loader import es, batch_size, index
 
 
 @coroutine
 def transform(batch):
     enrich = lambda row: {
-        '_index': ELASTICSEARCH_INDEX,
+        '_index': index,
         '_id': row['id'],
         'title': row['title'],
         'description': row['description'],
@@ -21,14 +20,12 @@ def transform(batch):
         'directors': row['directors'],
     }
     
-    while True:
-        movies = (yield)
+    while movies := (yield):
         documents = map(enrich, movies)
         batch.send(documents)
 
 
 @coroutine
 def load():
-    while True:
-        batch = (yield)
+    while batch := (yield):
         bulk(client=es, actions=batch, chunk_size=batch_size, request_timeout=200)

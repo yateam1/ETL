@@ -42,6 +42,7 @@ class RedisStorage(BaseStorage):
         state = self.redis_adapter.get(self.storage_db)
         if state is None:
             return {}
+        return {}   # FIXME Удалить эту строку, она для отладки
         state = json.loads(state)
         return state
 

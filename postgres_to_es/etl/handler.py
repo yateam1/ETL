@@ -9,8 +9,7 @@ import redis
 from .transform_load import load, transform
 from .movie import extract_movies
 from .serial import extract_serials
-from ..config import ELASTICSEARCH_INDEX
-from ..loader import storage, es
+from ..loader import storage, es, index
 from ..state import State
 
 
@@ -25,7 +24,7 @@ def launch_etl():
     now = datetime.now()
     logging.info(f'{__name__}: looking for updates in from {last_created} to {now}')
     
-    es.indices.create(index=ELASTICSEARCH_INDEX, ignore=400)
+    es.indices.create(index=index, ignore=400)
     
     load_filmworks = load()
     transform_filmworks = transform(load_filmworks)

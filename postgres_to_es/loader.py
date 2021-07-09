@@ -13,6 +13,7 @@ from postgres_to_es.utils import get_args
 dsn = make_dsn(POSTGRES_URI)
 storage = RedisStorage(Redis(REDIS_HOST), STATE_DB)
 es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}])
+index = 'movies'
 
 try:
     batch_size, interval, test_pass = get_args()  # Получаем аргументы командной строки
@@ -25,6 +26,7 @@ __all__ = (
     'dsn',
     'storage',
     'es',
+    'index',
     'batch_size',
     'interval',
     'test_pass',
