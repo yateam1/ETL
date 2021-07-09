@@ -1,10 +1,17 @@
+import logging
+from datetime import datetime
+
 import backoff
 import elasticsearch
 import psycopg2
 import redis
 
-from .method import load, transform, extract_filmworks_by_ids, extract_filmwork_ids
-from .query import queries
+from .transform_load import load, transform
+from .movie import extract_movies
+from .serial import extract_serials
+from ..config import ELASTICSEARCH_INDEX
+from ..loader import storage, es
+from ..state import State
 
 
 @backoff.on_exception(backoff.expo,
@@ -12,7 +19,7 @@ from .query import queries
                        psycopg2.OperationalError,
                        redis.exceptions.ConnectionError),
                       max_time=10)
-def launch_etl(batch_size: int):
+def launch_etl():
     state = State(storage)
     last_created = state.get_state(__name__)
     now = datetime.now()
@@ -20,12 +27,10 @@ def launch_etl(batch_size: int):
     
     es.indices.create(index=ELASTICSEARCH_INDEX, ignore=400)
     
-    
-    load_filmworks = load(batch_size)
+    load_filmworks = load()
     transform_filmworks = transform(load_filmworks)
 
-    for query in queries:
-        extract_filmworks = extract_filmworks_by_ids(transform_filmworks)
-        extract_filmwork_ids(extract_filmworks, query, batch_size, last_created, now)
+    extract_movies(transform_filmworks, last_created, now)
+    extract_serials(transform_filmworks, last_created, now)
 
     state.set_state(__name__, now)

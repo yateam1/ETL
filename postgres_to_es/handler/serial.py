@@ -6,7 +6,8 @@ import elasticsearch
 import psycopg2
 import redis
 
-from postgres_to_es.config import es, ELASTICSEARCH_INDEX, storage
+from postgres_to_es.config import ELASTICSEARCH_INDEX
+from postgres_to_es.loader import storage, es
 from postgres_to_es.process import ETLSerial
 from postgres_to_es.state import State
 

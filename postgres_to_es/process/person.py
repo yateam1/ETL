@@ -5,7 +5,7 @@ from psycopg2.extras import RealDictCursor
 
 from .coroutine import coroutine
 from .general import ETLGeneral
-from ..config import dsn
+from ..loader import dsn
 
 
 class ETLPerson(ETLGeneral):

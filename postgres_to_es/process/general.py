@@ -1,6 +1,7 @@
 from elasticsearch.helpers import bulk
 
-from postgres_to_es.config import ELASTICSEARCH_INDEX, es
+from postgres_to_es.config import ELASTICSEARCH_INDEX
+from ..loader import es
 from .coroutine import coroutine
 
 
