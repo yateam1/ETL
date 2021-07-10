@@ -5,9 +5,10 @@ import logging
 def get_args():
     """
     Получаем аргументы командной строки.
+    :return index: имя индекса в Elastic Search
     :return batch_size: размер пачки данных, чтобы не перегружать сервисы
     :return interval: интервал в секундах, через который запускается каждый новый цикл
-    :return test_pass: если данный параметр указан, то цикл остановится через указанное в нем кол-во повторений
+    :return debug: если данный параметр указан, то произойдет одна итерация цикла
     """
     parser = argparse.ArgumentParser(description='Launch ETL process for filmworks database',
                                      epilog='The process is logged in a file log.txt')

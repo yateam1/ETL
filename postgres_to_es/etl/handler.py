@@ -22,6 +22,11 @@ STATE_KEY = 'movies'
                        redis.exceptions.ConnectionError),
                       max_time=10)
 def launch_etl():
+    """
+    Основной метод запуска корутин ETL. Предварительно из хранилища Redis достается дата и время последней успещной
+    операции ETL. Если всё проходит хорошо, данные в хранилище обновляются.
+    :return:
+    """
     state = State(storage)
     last_created = state.get_state(STATE_KEY)
     now = datetime.now()

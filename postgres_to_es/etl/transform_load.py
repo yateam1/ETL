@@ -6,6 +6,11 @@ from postgres_to_es.loader import es, batch_size, index
 
 @coroutine
 def transform(batch):
+    """
+    Преобразование выборки из базы данных batch в словарь для заполнения индекса ES
+    :param batch:
+    :return:
+    """
     enrich = lambda row: {
         '_index': index,
         '_id': row['id'],
@@ -27,5 +32,9 @@ def transform(batch):
 
 @coroutine
 def load():
+    """
+    Заполнение индекса Elastic Search
+    :return:
+    """
     while batch := (yield):
         bulk(client=es, actions=batch, chunk_size=batch_size, request_timeout=200)

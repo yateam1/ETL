@@ -32,7 +32,7 @@ def extract_filmwork_ids(batch, query: str, date_from: datetime, date_to: dateti
 @coroutine
 def extract_filmworks_by_ids(batch):
     """
-    Основной метод извлечения записей из базы данных
+    Метод извлечения id'шников кинопроизведенийзаписей из базы данных
     :param batch: пачка извлеченных из БД данных
     :return: порция данных из БД, которые были изменены в заданный временной интервал
     """
