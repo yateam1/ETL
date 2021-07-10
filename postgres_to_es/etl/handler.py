@@ -25,7 +25,7 @@ def launch_etl():
     state = State(storage)
     last_created = state.get_state(STATE_KEY)
     now = datetime.now()
-    logging.info(f'{STATE_KEY}: looking for updates in from {last_created} to {now}')
+    logging.info(f'KEY {STATE_KEY}: looking for updates in from {last_created} to {now}')
     
     es.indices.create(index=index, ignore=400)
     
