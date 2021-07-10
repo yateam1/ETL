@@ -9,10 +9,19 @@ from postgres_to_es.config import POSTGRES_URI, REDIS_HOST, STATE_DB, ELASTICSEA
 from postgres_to_es.state import RedisStorage
 from postgres_to_es.utils import get_args
 
+"""
+:dsn: параметры подключения к СУБД Postgres
+:storage:
+:batch_size: размер пачки данных, чтобы не перегружать сервисы
+:interval: интервал в секундах, через который запускается каждый новый цикл
+:test_pass: если данный параметр указан, то цикл остановится через указанное в нем кол-во повторений
+"""
 
 dsn = make_dsn(POSTGRES_URI)
 storage = RedisStorage(Redis(REDIS_HOST), STATE_DB)
 es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}])
+
+
 
 try:
     index, batch_size, interval, debug = get_args()  # Получаем аргументы командной строки
