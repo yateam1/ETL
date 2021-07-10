@@ -5,7 +5,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from ...loader import dsn, batch_size
-from .query import queries, SQL_GET_SERIALS_BY_IDS
+from .query_ids import queries
+from .quiery_filmworks import SQL_GET_SERIALS_BY_IDS
 from ..coroutine import coroutine
 
 
