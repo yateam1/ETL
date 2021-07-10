@@ -15,7 +15,7 @@ storage = RedisStorage(Redis(REDIS_HOST), STATE_DB)
 es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}])
 
 try:
-    index, batch_size, interval, test_pass = get_args()  # Получаем аргументы командной строки
+    index, batch_size, interval, debug = get_args()  # Получаем аргументы командной строки
 except ValueError as e:
     logging.error(f'Exception {e}')
     sys.exit()
@@ -28,5 +28,5 @@ __all__ = (
     'index',
     'batch_size',
     'interval',
-    'test_pass',
+    'debug',
 )

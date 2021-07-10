@@ -13,6 +13,9 @@ from ..loader import storage, es, index
 from ..state import State
 
 
+STATE_KEY = 'movies'
+
+
 @backoff.on_exception(backoff.expo,
                       (elasticsearch.exceptions.ConnectionError,
                        psycopg2.OperationalError,
@@ -20,9 +23,9 @@ from ..state import State
                       max_time=10)
 def launch_etl():
     state = State(storage)
-    last_created = state.get_state(__name__)
+    last_created = state.get_state(STATE_KEY)
     now = datetime.now()
-    logging.info(f'{__name__}: looking for updates in from {last_created} to {now}')
+    logging.info(f'{STATE_KEY}: looking for updates in from {last_created} to {now}')
     
     es.indices.create(index=index, ignore=400)
     
@@ -32,4 +35,4 @@ def launch_etl():
     extract_movies(transform_filmworks, last_created, now)
     extract_serials(transform_filmworks, last_created, now)
 
-    state.set_state(__name__, now)
+    state.set_state(STATE_KEY, now)

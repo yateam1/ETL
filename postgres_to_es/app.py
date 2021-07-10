@@ -7,7 +7,7 @@ import psycopg2
 import redis
 
 from postgres_to_es.etl import launch_etl
-from postgres_to_es.loader import interval, test_pass
+from postgres_to_es.loader import interval, debug
 
 
 def start():
@@ -18,7 +18,9 @@ def start():
     :test_pass: если данный параметр указан, то цикл остановится через указанное в нем кол-во повторений
     :return:
     """
-    counter = 0
+    if debug:
+        logging.warning('DEBUG MODE. Only one iteration.')
+
     while True:
         logging.info(f'Start loop at {datetime.now()}')
         
@@ -29,14 +31,11 @@ def start():
                 redis.exceptions.ConnectionError):
             pass
         
+        if debug:
+            break
+
         logging.info(f'Pause {interval} seconds to the next ETL processes')
         sleep(interval)
-        
-        # Если мы в режиме отладки, считаем количество итераций
-        if test_pass:
-            counter += 1
-        if test_pass and counter == test_pass:
-            break
 
 
 if __name__ == '__main__':
