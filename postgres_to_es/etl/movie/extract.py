@@ -12,9 +12,13 @@ from ..coroutine import coroutine
 
 def extract_filmwork_ids(batch, query: str, date_from: datetime, date_to: datetime):
     """
-    Основной метод извлечения записей из базы данных
-    :param batch: пачка извлеченных из БД данных
-    :return: порция данных из БД, которые были изменены в заданный временной интервал
+    Извлекает из таблицы БД, которая (таблица) указана в query, id'шники кинопроизведений, которые изменились в
+    в заданный временной период.
+    :param batch: пачка данных, содержащая id'шники кинопроизведений и которая будет передана в последующую корутину
+    :param query: запрос, который ищет изменения в указанной в нем модели(таблице) в заданный временной период
+    :param date_from: начало (дата+время) временного периода
+    :param date_to: окончание (дата+время) временного периода
+    :return:
     """
     with psycopg2.connect(dsn=dsn) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
@@ -32,9 +36,9 @@ def extract_filmwork_ids(batch, query: str, date_from: datetime, date_to: dateti
 @coroutine
 def extract_filmworks_by_ids(batch):
     """
-    Основной метод извлечения записей из базы данных
+    Метод извлечения кинопроизведенийзаписей из базы данных по переданному из корутины списку filmwork_ids
     :param batch: пачка извлеченных из БД данных
-    :return: порция данных из БД, которые были изменены в заданный временной интервал
+    :return: send порция данных из БД, которые были изменены в заданный временной интервал
     """
     with psycopg2.connect(dsn=dsn) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
@@ -49,6 +53,14 @@ def extract_filmworks_by_ids(batch):
 
 
 def extract_movies(transform_function, last_created, now):
+    """
+    Запуск корутины получения id'шников кинопроизведений и самих кинопроизведений в заданный временной период.
+    В методе используется импортированные запросы, которые ищут изменения по всем моделям базы данных.
+    :param transform_function: функция transoform основного ETL-процесса (см.импорт)
+    :param last_created: начало (дата+время) временного периода
+    :param now: окончание (дата+время) временного периода
+    :return:
+    """
     for query in queries:
         logging.info(f'Search for modified records: {query}')
         extract_filmworks = extract_filmworks_by_ids(transform_function)
