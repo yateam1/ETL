@@ -9,8 +9,8 @@ import redis
 from .transform_load import load, transform
 from .movie import extract_movies
 from .serial import extract_serials
-from ..loader import storage, es, index
-from ..state import State
+from loader import storage, es, index
+from state import State
 
 
 STATE_KEY = 'movies'

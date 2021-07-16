@@ -1,7 +1,7 @@
 from elasticsearch.helpers import bulk
 
-from postgres_to_es.etl.coroutine import coroutine
-from postgres_to_es.loader import es, batch_size, index
+from .coroutine import coroutine
+from loader import es, batch_size, index
 
 
 @coroutine

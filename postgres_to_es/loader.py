@@ -5,9 +5,9 @@ from elasticsearch import Elasticsearch
 from psycopg2.extensions import make_dsn
 from redis import Redis
 
-from postgres_to_es.config import POSTGRES_URI, REDIS_HOST, STATE_DB, ELASTICSEARCH_HOST, ELASTICSEARCH_PORT
-from postgres_to_es.state import RedisStorage
-from postgres_to_es.utils import get_args
+from config import POSTGRES_URI, REDIS_HOST, STATE_DB, ELASTICSEARCH_HOST, ELASTICSEARCH_PORT
+from state import RedisStorage
+from utils import get_args
 
 """
 :dsn: параметры подключения к СУБД Postgres

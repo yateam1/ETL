@@ -6,8 +6,8 @@ import elasticsearch
 import psycopg2
 import redis
 
-from postgres_to_es.etl import launch_etl
-from postgres_to_es.loader import interval, debug
+from etl import launch_etl
+from loader import interval, debug
 
 
 def start():
