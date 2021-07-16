@@ -30,7 +30,7 @@ services:
       - .env
     restart: always
     volumes:
-      - .:/usr/src/app/
+      - .:/usr/src/postgres_to_es/
     depends_on:
       - redis
 

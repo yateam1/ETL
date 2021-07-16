@@ -1,6 +1,6 @@
 FROM python:3.9.5
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/postgres_to_es
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
