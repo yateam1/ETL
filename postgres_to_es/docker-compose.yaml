@@ -9,6 +9,8 @@ services:
     restart: always
     ports:
       - 9200:9200
+    networks:
+      - etl_net
     volumes:
       - es_data:/data
 
@@ -19,6 +21,8 @@ services:
       - redis_data:/data
     ports:
       - 6379:6379
+    networks:
+      - etl_net
     depends_on:
       - elasticsearch
 
@@ -29,6 +33,8 @@ services:
     env_file:
       - .env
     restart: always
+    networks:
+      - etl_net
     volumes:
       - .:/usr/src/postgres_to_es/
     depends_on:
@@ -37,3 +43,9 @@ services:
 volumes:
   es_data:
   redis_data:
+
+networks:
+  etl_net:
+    name: etl_network
+    driver: bridge
+
