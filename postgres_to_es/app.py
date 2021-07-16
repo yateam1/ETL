@@ -37,7 +37,7 @@ def start():
 
 if __name__ == '__main__':
     
-    logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
+    logging.basicConfig(level=logging.INFO,
                         format='%(levelname)s - %(asctime)s - %(name)s - %(message)s',
                         datefmt='%d-%b-%y %H:%M:%S')
     logging.getLogger('backoff').addHandler(logging.StreamHandler())
