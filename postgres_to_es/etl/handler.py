@@ -6,12 +6,13 @@ import elasticsearch
 import psycopg2
 import redis
 
-from .transform_load import load, transform
+from .transform import transform_to_filmworks_index, transform_to_genres_index
+from .load import load
+from .genre import extract_genres
 from .movie import extract_movies
 from .serial import extract_serials
-from loader import storage, es, index
+from loader import storage, es, index_movies, index_genres, index_persons
 from state import State
-
 
 STATE_KEY = 'movies'
 
@@ -32,12 +33,23 @@ def launch_etl():
     now = datetime.now()
     logging.info(f'KEY {STATE_KEY}: looking for updates in from {last_created} to {now}')
     
-    es.indices.create(index=index, ignore=400)
+    # Запускаем корутины перегрузки кинопроизведений
+    es.indices.create(index=index_movies, ignore=400)
     
     load_filmworks = load()
-    transform_filmworks = transform(load_filmworks)
+    transform_filmworks = transform_to_filmworks_index(load_filmworks)
 
     extract_movies(transform_filmworks, last_created, now)
     extract_serials(transform_filmworks, last_created, now)
+
+    # Запускаем корутины перегрузки жанров
+    es.indices.create(index=index_genres, ignore=400)
+    load_genres = load()
+    transform_genres = transform_to_genres_index(load_genres)
+    extract_genres(transform_genres, last_created, now)
+
+    # Запускаем корутины перегрузки персон
+    es.indices.create(index=index_persons, ignore=400)
+    # load_persons()
 
     state.set_state(STATE_KEY, now)
