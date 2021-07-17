@@ -6,10 +6,11 @@ import elasticsearch
 import psycopg2
 import redis
 
-from .transform import transform_to_filmworks_index, transform_to_genres_index
+from .transform import transform_to_filmworks_index, transform_to_genres_index, transform_to_persons_index
 from .load import load
 from .genre import extract_genres
 from .movie import extract_movies
+from .person import extract_persons
 from .serial import extract_serials
 from loader import storage, es, index_movies, index_genres, index_persons
 from state import State
@@ -50,6 +51,8 @@ def launch_etl():
 
     # Запускаем корутины перегрузки персон
     es.indices.create(index=index_persons, ignore=400)
-    # load_persons()
+    load_persons = load()
+    transform_persons = transform_to_persons_index(load_persons)
+    extract_persons(transform_persons, last_created, now)
 
     state.set_state(STATE_KEY, now)

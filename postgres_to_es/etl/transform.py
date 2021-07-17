@@ -56,10 +56,13 @@ def transform_to_persons_index(batch):
     enrich = lambda row: {
         '_index': index_persons,
         '_id': row['id'],
-        'first_name': row['first'],
+        'first_name': row['first_name'],
         'last_name': row['last_name'],
         'birth_date': row['birth_date'],
-        'roles': row['roles'],
+        'actor': row['actor'] != 0,
+        'director': row['director'] != 0,
+        'screenwriter': row['screenwriter'] != 0,
+        'producer': row['producer'] != 0,
     }
     
     while persons := (yield):

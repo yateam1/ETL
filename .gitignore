@@ -60,3 +60,4 @@ postgres_to_es/*.log
 
 # dumpfiles
 postgres_to_es/dump.*
+postgres_to_es/state/redis.conf
