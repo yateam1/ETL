@@ -40,7 +40,6 @@ class RedisStorage(BaseStorage):
         Загрузить состояние локально из постоянного хранилища.
         """
         state = self.redis_adapter.get(self.storage_db)
-        return {}   # FIXME Удалить, это для тестирования
         if state is None:
             return {}
         state = json.loads(state)
