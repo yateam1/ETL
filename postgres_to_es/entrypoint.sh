@@ -1,3 +1,3 @@
 #! /bin/bash
 
-python app.py --batch_size 6 --interval 6
+python app.py --batch_size 10 --interval 300
