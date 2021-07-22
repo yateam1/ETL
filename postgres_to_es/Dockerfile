@@ -7,8 +7,6 @@ ENV PYTHONUNBUFFERED 1
 
 COPY requirements/base.txt .
 COPY requirements/dev.txt .
-COPY entrypoint.sh .
-
 RUN pip install -r dev.txt
 
 COPY . .

@@ -1,3 +1,5 @@
+import re
+
 from .coroutine import coroutine
 from loader import index_movies, index_genres, index_persons
 
@@ -59,10 +61,10 @@ def transform_to_persons_index(batch):
         'first_name': row['first_name'],
         'last_name': row['last_name'],
         'birth_date': row['birth_date'],
-        'actor': row['actor'] != 0,
-        'director': row['director'] != 0,
-        'screenwriter': row['screenwriter'] != 0,
-        'producer': row['producer'] != 0,
+        'actor': re.split(',\s*', re.sub(r'[{}]', '', row['actor'])) if isinstance(row['actor'], str) else [],
+        'director': re.split(',\s*', re.sub(r'[{}]', '', row['director'])) if isinstance(row['director'], str) else [],
+        'screenwriter': re.split(',\s*', re.sub(r'[{}]', '', row['screenwriter'])) if isinstance(row['screenwriter'], str) else [],
+        'producer': re.split(',\s*', re.sub(r'[{}]', '', row['producer'])) if isinstance(row['producer'], str) else [],
     }
     
     while persons := (yield):
