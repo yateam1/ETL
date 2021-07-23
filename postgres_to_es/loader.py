@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch
 from psycopg2.extensions import make_dsn
 from redis import Redis
 
+from es_settings import es_settings, es_mappings
 from config import POSTGRES_URI, REDIS_HOST, STATE_DB, ELASTICSEARCH_HOST, ELASTICSEARCH_PORT
 from config import INDEX_MOVIES, INDEX_GENRES, INDEX_PERSONS
 from state import RedisStorage
@@ -41,6 +42,8 @@ __all__ = (
     'dsn',
     'storage',
     'es',
+    'es_settings',
+    'es_mappings',
     'batch_size',
     'interval',
     'debug',

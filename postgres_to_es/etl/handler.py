@@ -12,7 +12,7 @@ from .genre import extract_genres
 from .movie import extract_movies
 from .person import extract_persons
 from .serial import extract_serials
-from loader import storage, es, index_movies, index_genres, index_persons
+from loader import storage, es, index_movies, index_genres, index_persons, es_settings, es_mappings
 from state import State
 
 STATE_KEY = 'movies'
@@ -35,7 +35,7 @@ def launch_etl():
     logging.info(f'KEY {STATE_KEY}: looking for updates in from {last_created} to {now}')
     
     # Запускаем корутины перегрузки кинопроизведений
-    es.indices.create(index=index_movies, ignore=400)
+    es.indices.create(index=index_movies, body={'settings': es_settings, 'mappings': es_mappings}, ignore=400)
     
     load_filmworks = load()
     transform_filmworks = transform_to_filmworks_index(load_filmworks)
@@ -44,13 +44,13 @@ def launch_etl():
     extract_serials(transform_filmworks, last_created, now)
 
     # Запускаем корутины перегрузки жанров
-    es.indices.create(index=index_genres, ignore=400)
+    es.indices.create(index=index_genres, body={'settings': es_settings, 'mappings': es_mappings}, ignore=400)
     load_genres = load()
     transform_genres = transform_to_genres_index(load_genres)
     extract_genres(transform_genres, last_created, now)
 
     # Запускаем корутины перегрузки персон
-    es.indices.create(index=index_persons, ignore=400)
+    es.indices.create(index=index_persons, body={'settings': es_settings, 'mappings': es_mappings}, ignore=400)
     load_persons = load()
     transform_persons = transform_to_persons_index(load_persons)
     extract_persons(transform_persons, last_created, now)
