@@ -8,6 +8,8 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements/base.txt .
 COPY requirements/dev.txt .
 COPY requirements/production.txt .
+COPY ./entrypoint.sh .
+
 RUN pip install -r dev.txt
 
 RUN chmod +x ./entrypoint.sh
