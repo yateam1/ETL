@@ -10,7 +10,7 @@ services:
     ports:
       - 9200:9200
     networks:
-      - etl_net
+      - movie_net
     volumes:
       - es_data:/data
 
@@ -22,7 +22,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - etl_net
+      - movie_net
     depends_on:
       - elasticsearch
 
@@ -34,7 +34,7 @@ services:
       - .env
     restart: always
     networks:
-      - etl_net
+      - movie_net
     volumes:
       - .:/usr/src/postgres_to_es/
     depends_on:
@@ -46,7 +46,7 @@ volumes:
   redis_data:
 
 networks:
-  etl_net:
-    name: etl_network
+  movie_net:
+    name: movie_net
     driver: bridge
 

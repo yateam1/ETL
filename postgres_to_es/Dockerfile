@@ -7,9 +7,8 @@ ENV PYTHONUNBUFFERED 1
 
 COPY requirements/base.txt .
 COPY requirements/dev.txt .
+COPY requirements/production.txt .
 RUN pip install -r dev.txt
-
-COPY . .
 
 RUN chmod +x ./entrypoint.sh
 ENTRYPOINT ["/usr/src/postgres_to_es/entrypoint.sh"]
