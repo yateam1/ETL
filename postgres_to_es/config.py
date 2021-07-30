@@ -1,25 +1,52 @@
 from environs import Env
+from pydantic import BaseModel
 
 env = Env()
 env.read_env()
 
+
+class PostgresSettings(BaseModel):
+    host: str
+    port: int
+
+
+class RedisSettings(BaseModel):
+    host: str
+    port: int
+
+
+class ElasticSettings(BaseModel):
+    host: str
+    port: int
+
+
+class Config(BaseModel):
+    postgres_db: PostgresSettings
+    redis: RedisSettings
+    elasticsearch: ElasticSettings
+
+
+config = Config.parse_file('config.json')
+
 # Параметры подключения к базе данных
-POSTGRES_HOST = env.str('POSTGRES_HOST', default='localhost')
-POSTGRES_PORT = env.int('POSTGRES_PORT', default=5432)
+POSTGRES_HOST = config.postgres_db.host
+POSTGRES_PORT = config.postgres_db.port
 POSTGRES_DB = env.str('POSTGRES_DB')
 POSTGRES_USER = env.str('POSTGRES_USER')
 POSTGRES_PASSWORD = env.str('POSTGRES_PASSWORD')
 POSTGRES_URI = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
 # Параметры подключения к Redis
-REDIS_HOST = env.str('REDIS_HOST', default='localhost')
+REDIS_HOST = config.redis.host
+REDIS_PORT = config.redis.port
 STATE_DB = 'Movie_ETL'
 
-# Параметры подключения к Elastic Search
-ELASTICSEARCH_HOST = env.str('ELASTICSEARCH_HOST', default='localhost')
-ELASTICSEARCH_PORT = env.str('ELASTICSEARCH_PORT', default='9200')
+# Параметры подключения к Elasticsearch
+ELASTICSEARCH_HOST = config.elasticsearch.host
+ELASTICSEARCH_PORT = config.elasticsearch.port
 
 # Наименования индексов
-INDEX_MOVIES = env.str('INDEX_MOVIES', default='movies')
-INDEX_GENRES = env.str('INDEX_GENRES', default='genres')
-INDEX_PERSONS = env.str('INDEX_PERSONS', default='persons')
+INDEX_MOVIES = 'movies'
+INDEX_GENRES = 'genres'
+INDEX_PERSONS = 'persons'
+
