@@ -63,7 +63,7 @@ def transform_to_persons_index(batch):
         'birth_date': row['birth_date'],
         'actor': re.split(',\s*', re.sub(r'[{}]', '', row['actor'])) if isinstance(row['actor'], str) else [],
         'director': re.split(',\s*', re.sub(r'[{}]', '', row['director'])) if isinstance(row['director'], str) else [],
-        'screenwriter': re.split(',\s*', re.sub(r'[{}]', '', row['screenwriter'])) if isinstance(row['screenwriter'], str) else [],
+        'writer': re.split(',\s*', re.sub(r'[{}]', '', row['screenwriter'])) if isinstance(row['screenwriter'], str) else [],
         'producer': re.split(',\s*', re.sub(r'[{}]', '', row['producer'])) if isinstance(row['producer'], str) else [],
     }
     
