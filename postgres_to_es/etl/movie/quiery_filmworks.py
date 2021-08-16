@@ -1,6 +1,7 @@
 SQL_GET_MOVIES_BY_IDS = """
     SELECT movie_movie.id, movie_movie.title, movie_movie.description,
-           movie_movie.creation_date, movie_movie.rating, 'movie' AS type,
+           movie_movie.creation_date, movie_movie.rating, movie_movie.by_subscription, 
+           movie_movie.age_classification, 'movie' AS type,
            ARRAY_AGG(DISTINCT movie_genre.name ) AS genres, ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name,
            CONCAT(' ', movie_person.first_name)) ) FILTER (WHERE movie_moviepersonrole.role = 0) AS actors,
            ARRAY_AGG(DISTINCT CONCAT(movie_person.last_name, CONCAT(' ', movie_person.first_name)) )

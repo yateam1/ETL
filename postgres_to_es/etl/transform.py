@@ -18,6 +18,8 @@ def transform_to_filmworks_index(batch):
         'description': row['description'],
         'creation_date': row['creation_date'],
         'rating': row['rating'],
+        'by_subscription': row['by_subscription'],
+        'age_classification': row['age_classification'],
         'type': row['type'],
         'genres': row['genres'],
         'actors': row['actors'],
